@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/live_stream?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: dudwns1641@
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+
+  jwt:
+    secret: testtesttest
+    token:
+      access-expiration-time: 3600000    # 1 hour in milliseconds
+      refresh-expiration-time: 604800000   # 7 days in milliseconds
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
