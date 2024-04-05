@@ -1,15 +1,15 @@
 package mangnani.livestreaming.donation.dto.response;
 
 import lombok.Getter;
+import mangnani.livestreaming.global.dto.ResponseCode;
 import mangnani.livestreaming.global.dto.ResponseDto;
+import mangnani.livestreaming.global.dto.ResponseMessage;
 
 @Getter
 public class DonationResponse extends ResponseDto {
 
-	private static final String MESSAGE = "Donation Success";
-
 	private DonationResponse() {
-		super(MESSAGE);
+		super(ResponseCode.DONATION_SUCCESS, ResponseMessage.DONATION_SUCCESS);
 	}
 
 	public static DonationResponse success() {

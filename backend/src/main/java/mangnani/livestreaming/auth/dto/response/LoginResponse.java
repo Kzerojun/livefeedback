@@ -20,7 +20,7 @@ public class LoginResponse extends ResponseDto {
 	@Builder
 	public LoginResponse(String grantType, String accessToken, String refreshToken,
 			Long refreshTokenExpirationTIme) {
-		super(ResponseCode.LOGIN_SUCCESS, ResponseMessage.SUCCESS);
+		super(ResponseCode.LOGIN_SUCCESS, ResponseMessage.SIGNUP_SUCCESS);
 		this.grantType = grantType;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;

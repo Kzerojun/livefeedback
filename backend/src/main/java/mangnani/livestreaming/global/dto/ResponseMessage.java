@@ -4,6 +4,9 @@ public interface ResponseMessage {
 
 	//HTTP STATUS 200
 	String SUCCESS = "Success";
+	String DONATION_SUCCESS = "Donation Success";
+	String LOGIN_SUCCESS = "Login Success";
+	String SIGNUP_SUCCESS = "SignUp Success";
 
 	//HTTP STATUS 400
 	String DUPLICATE_LOGIN_ID= "중복된 아이디 입니다.";

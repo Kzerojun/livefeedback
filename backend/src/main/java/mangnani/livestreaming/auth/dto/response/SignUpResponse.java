@@ -17,6 +17,4 @@ public class SignUpResponse extends ResponseDto {
 	public static SignUpResponse success() {
 		return new SignUpResponse();
 	}
-
-
 }
