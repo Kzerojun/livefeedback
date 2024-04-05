@@ -11,7 +11,7 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 public class SignUpResponse extends ResponseDto {
 
 	 private SignUpResponse() {
-		super(ResponseCode.SIGN_UP_SUCCESS, ResponseMessage.SUCCESS);
+		super(ResponseCode.SIGN_UP_SUCCESS, ResponseMessage.SIGNUP_SUCCESS);
 	}
 
 	public static SignUpResponse success() {
