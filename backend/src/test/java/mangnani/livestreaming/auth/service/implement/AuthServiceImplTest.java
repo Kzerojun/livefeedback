@@ -87,7 +87,7 @@ public class AuthServiceImplTest {
 		DuplicatedLoginIdException response = assertThrows(
 				DuplicatedLoginIdException.class, () -> authService.signUp(signUpRequest));
 
-		assertThat(response.getMessage()).isEqualTo("중복된 이메일 입니다.");
+		assertThat(response.getMessage()).isEqualTo("중복된 아이디 입니다.");
 	}
 
 	@DisplayName("중복된 닉네임 회원가입 실패")
@@ -122,7 +122,7 @@ public class AuthServiceImplTest {
 		ResponseEntity<LoginResponse> response = authService.login(loginRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody().getMessage()).isEqualTo("Success");
+		assertThat(response.getBody().getMessage()).isEqualTo("Login Success");
 		assertThat(response.getBody().getCode()).isEqualTo("LS");
 		assertThat(response.getBody().getAccessToken()).isEqualTo("accessToken");
 		assertThat(response.getBody().getRefreshToken()).isEqualTo("refreshToken");
