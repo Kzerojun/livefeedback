@@ -10,12 +10,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<ExceptionResponse> handleBadRequestException(BadRequestException e) {
-		return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
+		return ResponseEntity.badRequest().body(ExceptionResponse.from(e.getMessage()));
 	}
 
 	@ExceptionHandler(UnauthorizedException.class)
 	public ResponseEntity<ExceptionResponse> handleUnauthorizedException(UnauthorizedException e) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(new ExceptionResponse(e.getMessage()));
+				.body(ExceptionResponse.from(e.getMessage()));
 	}
 }
