@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
+import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.exception.DuplicatedEmailException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
 import mangnani.livestreaming.member.repository.MemberRepository;
@@ -45,9 +46,11 @@ public class AuthServiceImplTest {
 		when(userRepository.existsByNickname(anyString())).thenReturn(false);
 		when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-		ResponseEntity<Void> response = userService.signUp(signUpRequest);
+		ResponseEntity<SignUpResponse> response = userService.signUp(signUpRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+		assertThat(response.getBody().getCode()).isEqualTo("SUS");
+		assertThat(response.getBody().getMessage()).isEqualTo("Success");
 		verify(userRepository, times(1)).save(any());
 	}
 
