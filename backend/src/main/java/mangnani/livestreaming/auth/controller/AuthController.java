@@ -29,9 +29,9 @@ public class AuthController {
 		return authService.signUp(signUpRequest);
 	}
 
-	@PostMapping("/signin")
-	public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid LoginRequest loginRequest) {
-		return authService.signIn(loginRequest);
+	@PostMapping("/login")
+	public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+		return authService.login(loginRequest);
 	}
 
 	@PostMapping("/logout")
@@ -39,7 +39,6 @@ public class AuthController {
 		return authService.logout(logoutRequest);
 	}
 
-	//TODO
 	@PostMapping("/reissue")
 	public ResponseEntity<?> reissue(@RequestBody @Valid ReissueRequest reissueRequest) {
 		return authService.reissue(reissueRequest);

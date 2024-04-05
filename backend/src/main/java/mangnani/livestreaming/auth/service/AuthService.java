@@ -12,7 +12,7 @@ public interface AuthService {
 
 	ResponseEntity<SignUpResponse> signUp(SignUpRequest signUpRequest);
 
-	ResponseEntity<LoginResponse> signIn(LoginRequest loginRequest);
+	ResponseEntity<LoginResponse> login(LoginRequest loginRequest);
 
 	ResponseEntity<?> reissue(ReissueRequest reissueRequest);
 

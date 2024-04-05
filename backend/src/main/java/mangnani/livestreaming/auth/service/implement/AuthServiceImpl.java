@@ -8,7 +8,7 @@ import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
-import mangnani.livestreaming.auth.exception.DuplicatedEmailException;
+import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
 import mangnani.livestreaming.auth.exception.LoginFailedException;
 import mangnani.livestreaming.auth.service.AuthService;
@@ -39,10 +39,13 @@ public class AuthServiceImpl implements AuthService {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
+	private static final String REFRESH_TOKEN_PREFIX = "RT:";
+
+	private static final String LOGOUT_STATUS_VALUE = "logout";
 	@Override
 	public ResponseEntity<SignUpResponse> signUp(SignUpRequest signUpRequest) {
 		if (memberRepository.existsByLoginId(signUpRequest.getLoginId())) {
-			throw new DuplicatedEmailException();
+			throw new DuplicatedLoginIdException();
 		}
 
 		if (memberRepository.existsByNickname(signUpRequest.getNickname())) {
@@ -63,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<LoginResponse> signIn(LoginRequest loginRequest) {
+	public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
 
 		if (!memberRepository.existsByLoginId(loginRequest.getLoginId())) {
 			throw new LoginFailedException();
@@ -74,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 				.authenticate(authenticationToken);
 
 		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
-		redisTemplate.opsForValue().set("RT:" + authentication.getName(),
+		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
 				loginResponse.getRefreshToken(),
 				loginResponse.getRefreshTokenExpirationTIme(), TimeUnit.MILLISECONDS);
 
@@ -90,13 +93,13 @@ public class AuthServiceImpl implements AuthService {
 		Authentication authentication = jwtTokenProvider.getAuthentication(
 				reissue.getAccessToken());
 
-		String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
+		String refreshToken = (String) redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName());
 		if (!refreshToken.equals(reissue.getRefreshToken())) {
 			throw new NoPermissionTokenException();
 		}
 
 		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
-		redisTemplate.opsForValue().set("RT:" + authentication.getName(),
+		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
 				loginResponse.getRefreshToken(),
 				loginResponse.getRefreshTokenExpirationTIme(), TimeUnit.MILLISECONDS);
 
@@ -107,7 +110,6 @@ public class AuthServiceImpl implements AuthService {
 	public ResponseEntity<Void> logout(LogoutRequest logoutRequest) {
 
 		if (!jwtTokenProvider.validate(logoutRequest.getAccessToken())) {
-			System.out.println("인증 실패");
 			return ResponseEntity.badRequest().build();
 		}
 
@@ -115,14 +117,14 @@ public class AuthServiceImpl implements AuthService {
 				logoutRequest.getAccessToken());
 
 		//Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지
-		if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
+		if (redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName()) != null) {
 			// Refresh Token 삭제
-			redisTemplate.delete("RT:" + authentication.getName());
+			redisTemplate.delete(REFRESH_TOKEN_PREFIX + authentication.getName());
 		}
 
 		Long expiration = jwtTokenProvider.getExpiration(logoutRequest.getAccessToken());
 		redisTemplate.opsForValue()
-				.set(logoutRequest.getRefreshToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+				.set(logoutRequest.getRefreshToken(), LOGOUT_STATUS_VALUE, expiration, TimeUnit.MILLISECONDS);
 
 		return ResponseEntity.ok().build();
 	}
