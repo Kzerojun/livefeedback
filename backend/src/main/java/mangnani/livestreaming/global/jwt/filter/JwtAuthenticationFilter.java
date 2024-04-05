@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private static final String AUTHORIZATION_HEADER = "Authorization";
-	private static final String BEARER_TYPE = "Bearer";
+	private static final String BEARER_TYPE = "Bearer ";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private String resolveToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-		if (bearerToken != null && StringUtils.hasText(BEARER_TYPE) && bearerToken.startsWith(
+		if (bearerToken!=null &&StringUtils.hasText(AUTHORIZATION_HEADER) && bearerToken.startsWith(
 				BEARER_TYPE)) {
 			return bearerToken.substring(7);
 		}

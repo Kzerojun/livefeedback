@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import mangnani.livestreaming.auth.dto.response.SignInResponse;
+import mangnani.livestreaming.auth.dto.response.LoginResponse;
 import mangnani.livestreaming.global.exception.NoPermissionTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
 	private long refreshTokenExpireTime;
 
 
-	public SignInResponse generateToken(Authentication authentication) {
+	public LoginResponse generateToken(Authentication authentication) {
 		String authorities = authentication.getAuthorities()
 				.stream()
 				.map(GrantedAuthority::getAuthority)
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
 				.signWith(SignatureAlgorithm.HS256, jwtSecret)
 				.compact();
 
-		return SignInResponse.builder()
+		return LoginResponse.builder()
 				.grantType(BEARER_TYPE)
 				.accessToken(accessToken)
 				.refreshToken(refreshToken)
@@ -67,6 +67,7 @@ public class JwtTokenProvider {
 	public boolean validate(String accessToken) {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(accessToken);
+			log.info("성공");
 			return true;
 		} catch (SecurityException | MalformedJwtException exception) {
 			log.info("Invalid JWT Token", exception);
@@ -84,7 +85,6 @@ public class JwtTokenProvider {
 
 	public Authentication getAuthentication(String accessToken) {
 		Claims claims = parseClaims(accessToken);
-		System.out.println(claims);
 		if (claims.get(AUTHORITIES_KEY) == null) {
 			throw new NoPermissionTokenException();
 		}
