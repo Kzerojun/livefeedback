@@ -71,7 +71,7 @@ public class AuthServiceImplTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 		assertThat(response.getBody().getCode()).isEqualTo("SUS");
-		assertThat(response.getBody().getMessage()).isEqualTo("Success");
+		assertThat(response.getBody().getMessage()).isEqualTo("회원가입 성공");
 		verify(memberRepository, times(1)).save(any());
 	}
 
@@ -87,6 +87,7 @@ public class AuthServiceImplTest {
 		DuplicatedLoginIdException response = assertThrows(
 				DuplicatedLoginIdException.class, () -> authService.signUp(signUpRequest));
 
+		assertThat(response.getCode()).isEqualTo("DLI");
 		assertThat(response.getMessage()).isEqualTo("중복된 아이디 입니다.");
 	}
 
@@ -102,6 +103,7 @@ public class AuthServiceImplTest {
 		DuplicatedNicknameException response = assertThrows(
 				DuplicatedNicknameException.class, () -> authService.signUp(signUpRequest));
 
+		assertThat(response.getCode()).isEqualTo("DN");
 		assertThat(response.getMessage()).isEqualTo("중복된 닉네임 입니다.");
 	}
 
@@ -122,7 +124,7 @@ public class AuthServiceImplTest {
 		ResponseEntity<LoginResponse> response = authService.login(loginRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody().getMessage()).isEqualTo("Login Success");
+		assertThat(response.getBody().getMessage()).isEqualTo("로그인 성공");
 		assertThat(response.getBody().getCode()).isEqualTo("LS");
 		assertThat(response.getBody().getAccessToken()).isEqualTo("accessToken");
 		assertThat(response.getBody().getRefreshToken()).isEqualTo("refreshToken");

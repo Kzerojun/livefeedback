@@ -2,9 +2,12 @@ package mangnani.livestreaming.donation.service.implement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import mangnani.livestreaming.donation.dto.request.DonationRequest;
 import mangnani.livestreaming.donation.dto.response.DonationResponse;
 import mangnani.livestreaming.donation.entity.Donation;
@@ -12,7 +15,6 @@ import mangnani.livestreaming.donation.repository.DonationRepository;
 import mangnani.livestreaming.member.entity.Member;
 import mangnani.livestreaming.member.exception.NoExistedMember;
 import mangnani.livestreaming.member.repository.MemberRepository;
-import mangnani.livestreaming.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +31,6 @@ class DonationServiceImplTest {
 	private DonationRepository donationRepository;
 
 	@Mock
-	private MemberService memberService;
-
-	@Mock
 	private MemberRepository memberRepository;
 
 	@InjectMocks
@@ -44,15 +43,14 @@ class DonationServiceImplTest {
 		DonationRequest donationRequest = donationRequest();
 		Member donorMember = donorMember();
 		Member recipientMember = recipientMember();
-		when(memberService.findByLoginId(donationRequest.getDonorMemberLoginId())).thenReturn(donorMember);
-		when(memberService.findByLoginId(donationRequest.getRecipientMemberLoginId())).thenReturn(recipientMember);
-
-		Donation donation = donation(donorMember, recipientMember, donationRequest);
+		when(memberRepository.findByLoginId(donationRequest.getDonorMemberLoginId())).thenReturn(
+				Optional.of(donorMember));
+		when(memberRepository.findByLoginId(donationRequest.getRecipientMemberLoginId())).thenReturn(Optional.of(recipientMember));
 
 		ResponseEntity<DonationResponse> response = donationService.donate(donationRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody().getMessage()).isEqualTo("Donation Success");
+		assertThat(response.getBody().getMessage()).isEqualTo("도네이션 성공");
 	}
 
 
@@ -60,23 +58,36 @@ class DonationServiceImplTest {
 	@Test
 	void donate_Fail_NoExistedDonorUser() {
 		DonationRequest donationRequest = donationRequest();
-		when(memberService.findByLoginId(donationRequest.getDonorMemberLoginId())).thenThrow(
-				NoExistedMember.class);
+		when(memberRepository.findByLoginId(donationRequest.getDonorMemberLoginId())).thenThrow(
+				new NoExistedMember());
 
 		assertThatThrownBy(() -> donationService.donate(donationRequest)).isInstanceOf(
 				NoExistedMember.class);
+
+		NoExistedMember noExistedMember = assertThrows(NoExistedMember.class,
+				() -> donationService.donate(donationRequest));
+
+		assertThat(noExistedMember.getCode()).isEqualTo("NEM");
+		assertThat(noExistedMember.getMessage()).isEqualTo("멤버가 존재하지 않습니다.");
 	}
 
 	@DisplayName("도네이션 실패 후원받는 유저 존재 X")
 	@Test
 	void donate_Fail_NoExistedRecipientUser() {
 		DonationRequest donationRequest = donationRequest();
-		when(memberService.findByLoginId(donationRequest.getRecipientMemberLoginId())).thenThrow(
-				NoExistedMember.class);
+		Member mockedMember = mock(Member.class);
+		when(memberRepository.findByLoginId(donationRequest.getDonorMemberLoginId())).thenReturn(Optional.of(mockedMember));
+		when(memberRepository.findByLoginId(donationRequest.getRecipientMemberLoginId())).thenThrow(new NoExistedMember());
 
-		when(memberService.findByLoginId(donationRequest.getDonorMemberLoginId())).thenReturn(any());
+
 		assertThatThrownBy(() -> donationService.donate(donationRequest)).isInstanceOf(
 				NoExistedMember.class);
+
+		NoExistedMember noExistedMember = assertThrows(NoExistedMember.class,
+				() -> donationService.donate(donationRequest));
+
+		assertThat(noExistedMember.getCode()).isEqualTo("NEM");
+		assertThat(noExistedMember.getMessage()).isEqualTo("멤버가 존재하지 않습니다.");
 	}
 
 
