@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.dto.request.LogoutRequest;
 import mangnani.livestreaming.auth.dto.request.ReissueRequest;
-import mangnani.livestreaming.auth.dto.request.SignInRequest;
+import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
-import mangnani.livestreaming.auth.dto.response.SignInResponse;
+import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +25,13 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/signup")
-	public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
+	public ResponseEntity<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest signUpRequest) {
 		return authService.signUp(signUpRequest);
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest signInRequest) {
-		return authService.signIn(signInRequest);
+	public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid LoginRequest loginRequest) {
+		return authService.signIn(loginRequest);
 	}
 
 	@PostMapping("/logout")
