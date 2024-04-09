@@ -7,6 +7,8 @@ import mangnani.livestreaming.donation.entity.Donation;
 import mangnani.livestreaming.donation.repository.DonationRepository;
 import mangnani.livestreaming.donation.service.DonationService;
 import mangnani.livestreaming.member.entity.Member;
+import mangnani.livestreaming.member.exception.NoExistedMember;
+import mangnani.livestreaming.member.repository.MemberRepository;
 import mangnani.livestreaming.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,15 @@ public class DonationServiceImpl implements DonationService {
 
 	private final DonationRepository donationRepository;
 
-	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 	@Override
 	public ResponseEntity<DonationResponse> donate(DonationRequest donationRequest) {
-		Member donorMember = memberService.findByLoginId(donationRequest.getDonorMemberLoginId());
+		Member donorMember = memberRepository.findByLoginId(donationRequest.getDonorMemberLoginId())
+				.orElseThrow(NoExistedMember::new);
 
-		Member recipientMember = memberService.findByLoginId(
-				donationRequest.getRecipientMemberLoginId());
+		Member recipientMember = memberRepository.findByLoginId(donationRequest.getRecipientMemberLoginId())
+				.orElseThrow(NoExistedMember::new);
 
 		Donation donation = Donation.builder()
 				.donor(donorMember)

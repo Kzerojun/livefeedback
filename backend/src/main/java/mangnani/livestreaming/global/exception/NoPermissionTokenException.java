@@ -1,10 +1,11 @@
 package mangnani.livestreaming.global.exception;
 
+import mangnani.livestreaming.global.dto.ResponseCode;
+import mangnani.livestreaming.global.dto.ResponseMessage;
+
 public class NoPermissionTokenException extends UnauthorizedException {
 
-	private static final String MESSAGE = "권한이 없는 토큰입니다.";
-
 	public NoPermissionTokenException() {
-		super(MESSAGE);
+		super(ResponseCode.NO_PERMISSION_TOKEN, ResponseMessage.NO_PERMISSION_TOKEN);
 	}
 }

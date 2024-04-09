@@ -1,8 +1,13 @@
 package mangnani.livestreaming.global.exception;
 
-public class UnauthorizedException extends BusinessException {
+import lombok.Getter;
 
-	public UnauthorizedException(String message) {
+@Getter
+public class UnauthorizedException extends BusinessException {
+	private final String code;
+
+	public UnauthorizedException(String code, String message) {
 		super(message);
+		this.code = code;
 	}
 }

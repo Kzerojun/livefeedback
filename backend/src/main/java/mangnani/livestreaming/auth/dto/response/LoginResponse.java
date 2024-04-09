@@ -15,15 +15,18 @@ public class LoginResponse extends ResponseDto {
 
 	private final String refreshToken;
 
-	private final Long refreshTokenExpirationTIme;
+	private final Long accessTokenExpirationTime;
+
+	private final Long refreshTokenExpirationTime;
 
 	@Builder
-	public LoginResponse(String grantType, String accessToken, String refreshToken,
-			Long refreshTokenExpirationTIme) {
+	public LoginResponse(String grantType, String accessToken, String refreshToken,Long accessTokenExpirationTime,
+			Long refreshTokenExpirationTime) {
 		super(ResponseCode.LOGIN_SUCCESS, ResponseMessage.LOGIN_SUCCESS);
 		this.grantType = grantType;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
-		this.refreshTokenExpirationTIme = refreshTokenExpirationTIme;
+		this.accessTokenExpirationTime = accessTokenExpirationTime;
+		this.refreshTokenExpirationTime = refreshTokenExpirationTime;
 	}
 }
