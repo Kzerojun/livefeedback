@@ -5,6 +5,8 @@ public interface ResponseCode {
 	//HTTP STATUS 200
 	String LOGIN_SUCCESS = "LS";
 	String DONATION_SUCCESS = "DS";
+	String PATCH_IMAGE_SUCCESS = "PIS";
+	String Patch_Description_SUCCESS = "PDS";
 
 	//HTTP STATUS 201
 	String SIGN_UP_SUCCESS = "SUS";
@@ -16,6 +18,8 @@ public interface ResponseCode {
 	String NO_EXISTED_MEMBER = "NEM";
 
 	String VALIDATION_FAILED = "VF";
+
+	String NO_EXISTED_STATION = "NES";
 
 	//HTTP STATUS 401
 	String LOGIN_FAILED = "LF";

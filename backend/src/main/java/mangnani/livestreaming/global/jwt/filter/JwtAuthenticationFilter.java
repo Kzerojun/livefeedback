@@ -32,12 +32,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		//토큰 추출
 		String token = resolveToken(request);
 
+		if (token == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		//유효성 검사
-		if (token != null && jwtTokenProvider.validate(token)) {
+		if (jwtTokenProvider.validate(token)) {
 			String isLogout = (String) redisTemplate.opsForValue().get(token);
 
 			if (ObjectUtils.isEmpty(isLogout)) {
 				Authentication authentication = jwtTokenProvider.getAuthentication(token);
+				log.info(String.valueOf(authentication));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		}

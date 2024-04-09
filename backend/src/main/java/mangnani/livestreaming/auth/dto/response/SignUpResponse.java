@@ -1,13 +1,11 @@
 package mangnani.livestreaming.auth.dto.response;
 
 import lombok.Getter;
-import lombok.Setter;
 import mangnani.livestreaming.global.dto.ResponseCode;
 import mangnani.livestreaming.global.dto.ResponseDto;
 import mangnani.livestreaming.global.dto.ResponseMessage;
 
 @Getter
-@Setter
 public class SignUpResponse extends ResponseDto {
 
 	 private SignUpResponse() {

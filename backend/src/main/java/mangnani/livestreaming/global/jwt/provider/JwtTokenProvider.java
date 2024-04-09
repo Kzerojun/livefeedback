@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.global.config.CustomUserDetailsService;
 import mangnani.livestreaming.global.exception.NoPermissionTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,15 +17,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtTokenProvider {
 
 	private static final String AUTHORITIES_KEY = "auth";
 	private static final String BEARER_TYPE = "Bearer";
+	private final CustomUserDetailsService userDetailsService;
 
 	@Value("${spring.jwt.secret}")
 	private String jwtSecret;
@@ -89,14 +94,9 @@ public class JwtTokenProvider {
 		if (claims.get(AUTHORITIES_KEY) == null) {
 			throw new NoPermissionTokenException();
 		}
-
-		Collection<? extends GrantedAuthority> authorities = Arrays.stream(
-						claims.get(AUTHORITIES_KEY).toString().split(","))
-				.map(SimpleGrantedAuthority::new)
-				.toList();
-
-		User principal = new User(claims.getSubject(), "", authorities);
-		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+		return new UsernamePasswordAuthenticationToken(userDetails, accessToken,
+				userDetails.getAuthorities());
 	}
 
 	public Long getExpiration(String accessToken) {
