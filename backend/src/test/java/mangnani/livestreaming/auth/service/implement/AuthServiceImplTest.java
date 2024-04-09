@@ -129,7 +129,7 @@ public class AuthServiceImplTest {
 		assertThat(response.getBody().getAccessToken()).isEqualTo("accessToken");
 		assertThat(response.getBody().getRefreshToken()).isEqualTo("refreshToken");
 		assertThat(response.getBody().getGrantType()).isEqualTo("Bearer");
-		assertThat(response.getBody().getRefreshTokenExpirationTIme()).isEqualTo(100L);
+		assertThat(response.getBody().getRefreshTokenExpirationTime()).isEqualTo(100L);
 	}
 
 	@DisplayName("회원존재 X 로그인 실패")
@@ -154,7 +154,7 @@ public class AuthServiceImplTest {
 				.accessToken("accessToken")
 				.refreshToken("refreshToken")
 				.grantType("Bearer")
-				.refreshTokenExpirationTIme(100L)
+				.refreshTokenExpirationTime(100L)
 				.build();
 	}
 }

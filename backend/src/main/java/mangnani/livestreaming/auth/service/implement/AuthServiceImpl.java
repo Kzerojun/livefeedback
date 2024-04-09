@@ -25,8 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class AuthServiceImpl implements AuthService {
 
 	private final MemberRepository memberRepository;
@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
 		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
 		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
 				loginResponse.getRefreshToken(),
-				loginResponse.getRefreshTokenExpirationTIme(), TimeUnit.MILLISECONDS);
+				loginResponse.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
 		return ResponseEntity.ok().body(loginResponse);
 	}
@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
 		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
 		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
 				loginResponse.getRefreshToken(),
-				loginResponse.getRefreshTokenExpirationTIme(), TimeUnit.MILLISECONDS);
+				loginResponse.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
 		return ResponseEntity.ok().build();
 	}
