@@ -3,6 +3,7 @@ package mangnani.livestreaming.global.config;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.exception.LoginFailedException;
 import mangnani.livestreaming.member.entity.Member;
 import mangnani.livestreaming.member.repository.MemberRepository;
@@ -16,13 +17,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
 	private final MemberRepository memberRepository;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return memberRepository.findByLoginId(username)
+	public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+		return memberRepository.findByLoginId(loginId)
 				.map(this::createUserDetails)
 				.orElseThrow(LoginFailedException::new);
 	}

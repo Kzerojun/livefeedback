@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
 				.body(new ResponseDto(e.getCode(), e.getMessage()));
 	}
 
-	@ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-	public ResponseEntity<ResponseDto> validationExceptionHandler(Exception exception) {
-		return ResponseEntity.badRequest().body(ResponseDto.validationFailed());
-	}
+//	@ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
+//	public ResponseEntity<ResponseDto> validationExceptionHandler(Exception exception) {
+//		return ResponseEntity.badRequest().body(ResponseDto.validationFailed());
+//	}
 }

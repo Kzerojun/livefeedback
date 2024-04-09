@@ -38,7 +38,7 @@ public class WebSecurityConfig {
 				.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
 						SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-						.requestMatchers("/**").permitAll()
+						.requestMatchers("/**","/signup","/station/**").permitAll()
 						.anyRequest().authenticated()
 				).addFilterBefore(jwtAuthenticationFilter,
 						UsernamePasswordAuthenticationFilter.class)
