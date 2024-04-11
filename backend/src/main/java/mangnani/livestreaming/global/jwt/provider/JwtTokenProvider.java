@@ -100,6 +100,7 @@ public class JwtTokenProvider {
 	}
 
 	public Long getExpiration(String accessToken) {
+
 		Date expiration = Jwts.parser()
 				.setSigningKey(jwtSecret)
 				.parseClaimsJws(accessToken)

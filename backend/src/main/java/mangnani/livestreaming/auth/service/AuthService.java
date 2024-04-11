@@ -14,8 +14,9 @@ public interface AuthService {
 
 	ResponseEntity<LoginResponse> login(LoginRequest loginRequest);
 
+	ResponseEntity<Void> logout(String userLoginId,String accessToken);
+
 	ResponseEntity<?> reissue(ReissueRequest reissueRequest);
 
-	ResponseEntity<Void> logout(LogoutRequest logoutRequest);
 
 }

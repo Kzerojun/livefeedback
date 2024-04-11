@@ -9,6 +9,8 @@ public interface ResponseMessage {
 	String PATCH_IMAGE_SUCCESS = "방송국 이미지 변경 성공";
 	String PATCH_STATION_DESCRIPTION = "방송국 설명 변경 성공";
 
+	String REISSUE_TOKEN_SUCCESS = "토큰 재발급 성공";
+
 	//HTTP STATUS 400
 	String DUPLICATE_LOGIN_ID= "중복된 아이디 입니다.";
 
@@ -23,5 +25,8 @@ public interface ResponseMessage {
 	String LOGIN_FAILED = "로그인 또는 비밀번호가 올바르지 않습니다";
 
 	String NO_PERMISSION_TOKEN = "권한이 없는 토큰입니다.";
+
+	//HTTP STATUS 500
+	String DATABASE_ERROR = "데이터베이스 오류입니다.";
 
 }

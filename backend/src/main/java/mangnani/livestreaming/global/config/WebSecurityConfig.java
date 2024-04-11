@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,10 +37,13 @@ public class WebSecurityConfig {
 				.cors(cors -> cors.configurationSource(configurationSource()))
 				.csrf(CsrfConfigurer::disable)
 				.httpBasic(HttpBasicConfigurer::disable)
+				.logout(AbstractHttpConfigurer::disable)
+				.headers((headerConfig) -> headerConfig.frameOptions(
+						FrameOptionsConfig::disable))
 				.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
 						SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-						.requestMatchers("/**","/signup","/station/**").permitAll()
+						.requestMatchers("/**", "/signup", "/station/**", "/logout").permitAll()
 						.anyRequest().authenticated()
 				).addFilterBefore(jwtAuthenticationFilter,
 						UsernamePasswordAuthenticationFilter.class)

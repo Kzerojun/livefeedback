@@ -2,6 +2,7 @@ package mangnani.livestreaming.auth.service.implement;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.dto.request.LogoutRequest;
 import mangnani.livestreaming.auth.dto.request.ReissueRequest;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
@@ -12,8 +13,10 @@ import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
 import mangnani.livestreaming.auth.exception.LoginFailedException;
 import mangnani.livestreaming.auth.service.AuthService;
+import mangnani.livestreaming.global.dto.ResponseDto;
 import mangnani.livestreaming.global.exception.NoPermissionTokenException;
 import mangnani.livestreaming.global.jwt.provider.JwtTokenProvider;
+import mangnani.livestreaming.global.jwt.service.TokenBlackListService;
 import mangnani.livestreaming.member.entity.Member;
 import mangnani.livestreaming.member.repository.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
 	private final MemberRepository memberRepository;
@@ -37,13 +41,15 @@ public class AuthServiceImpl implements AuthService {
 
 	private final JwtTokenProvider jwtTokenProvider;
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	private static final String REFRESH_TOKEN_PREFIX = "RT:";
 
-	private static final String LOGOUT_STATUS_VALUE = "logout";
+	private static final String BLACKLIST = "BL:"; //액세스 토큰 탈취 방지 블랙리스트 추가
+
 	@Override
 	public ResponseEntity<SignUpResponse> signUp(SignUpRequest signUpRequest) {
+
 		if (memberRepository.existsByLoginId(signUpRequest.getLoginId())) {
 			throw new DuplicatedLoginIdException();
 		}
@@ -63,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
 		memberRepository.save(user);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(SignUpResponse.success());
+
 	}
 
 	@Override
@@ -93,7 +100,8 @@ public class AuthServiceImpl implements AuthService {
 		Authentication authentication = jwtTokenProvider.getAuthentication(
 				reissue.getAccessToken());
 
-		String refreshToken = (String) redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName());
+		String refreshToken = (String) redisTemplate.opsForValue()
+				.get(REFRESH_TOKEN_PREFIX + authentication.getName());
 		if (!refreshToken.equals(reissue.getRefreshToken())) {
 			throw new NoPermissionTokenException();
 		}
@@ -107,24 +115,19 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<Void> logout(LogoutRequest logoutRequest) {
+	public ResponseEntity<Void> logout(String userLoginId, String accessToken) {
 
-		if (!jwtTokenProvider.validate(logoutRequest.getAccessToken())) {
-			return ResponseEntity.badRequest().build();
+		//리프레쉬 토큰 삭제
+		String refreshTokenKey = REFRESH_TOKEN_PREFIX + userLoginId;
+		String refreshToken = redisTemplate.opsForValue().get(refreshTokenKey);
+		if (refreshToken != null) {
+			redisTemplate.delete(refreshTokenKey);
 		}
 
-		Authentication authentication = jwtTokenProvider.getAuthentication(
-				logoutRequest.getAccessToken());
-
-		//Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지
-		if (redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName()) != null) {
-			// Refresh Token 삭제
-			redisTemplate.delete(REFRESH_TOKEN_PREFIX + authentication.getName());
-		}
-
-		Long expiration = jwtTokenProvider.getExpiration(logoutRequest.getAccessToken());
+		//액세스 토큰 블랙리스트 등록
+		Long expiration = jwtTokenProvider.getExpiration(accessToken);
 		redisTemplate.opsForValue()
-				.set(logoutRequest.getRefreshToken(), LOGOUT_STATUS_VALUE, expiration, TimeUnit.MILLISECONDS);
+				.set(BLACKLIST + accessToken, "", expiration, TimeUnit.MILLISECONDS);
 
 		return ResponseEntity.ok().build();
 	}
