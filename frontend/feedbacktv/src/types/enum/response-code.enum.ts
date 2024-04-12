@@ -16,6 +16,11 @@ enum ResponseCode {
   //HTTP STATUS 401
   LOGIN_FAILED = "LF",
   NO_PERMISSION_TOKEN = "NPT",
+  AUTHORIZATION_FAIL = "AF",
+
+  //HTTP STATUS 500
+  DATABASE_ERROR = "DBE",
+
 }
 
 export default ResponseCode;

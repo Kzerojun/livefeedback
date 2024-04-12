@@ -9,7 +9,8 @@ import {logInRequest, signUpRequest} from "../../apis";
 import {KeyboardEvent} from 'react';
 import './style.css';
 import SignUpRequestDto from "../../apis/request/auth/sign-up-request.dto";
-import {SignUpResponseDto} from "../../apis/response/auth/sign-up-response.dto";
+import SignUpResponseDto from "../../apis/response/auth/sign-up-response.dto";
+import {MAIN_PATH} from "../../constants";
 
 export default function Authentication() {
 
@@ -19,8 +20,8 @@ export default function Authentication() {
   //     state : 쿠키 상태     //
   const [cookies, setCookie] = useCookies();
 
-  // //    function : 네비게이트 함수     //
-  // const navigator = useNavigate();
+  //    function : 네비게이트 함수     //
+  const navigate = useNavigate();
 
 
   //     component : sign in card 컴포넌트     //
@@ -81,8 +82,7 @@ export default function Authentication() {
       }
       );
 
-      // TODO : 로그인 성공 후 메인페이지로 돌아가게 설정
-      alert("로그인 성공");
+      navigate(MAIN_PATH());
     }
 
 
@@ -142,7 +142,8 @@ export default function Authentication() {
           <div className='auth-card-box'>
             <div className='auth-card-top'>
               <div className='auth-card-title-box'>
-                <h1>FeedBack<span className="auth-card-logo-part">tv</span></h1>
+                <div className='auth-card-title-logo'>FeedBack<span
+                    className='auth-card-logo-part'>TV</span></div>
               </div>
               <InputBox ref={loginRef} label='아이디' type='text' placeholder='아이디를 입력해주세요.'
                         error={error} value={loginId} onChange={onEmailChangeHandler}
@@ -330,7 +331,7 @@ export default function Authentication() {
           <div className='auth-card-box'>
             <div className='auth-card-top'>
               <div className='auth-card-title-box'>
-                <h1>FeedBack<span className="auth-card-logo-part">tv</span></h1>
+                <div className='auth-card-title-logo'>FeedBack<span className='auth-card-logo-part'>TV</span> </div>
               </div>
               <InputBox label={'아이디'} type={"text"} onChange={onLoginIdChangeHandler}
                         error={isLoginError} placeholder={'아이디(6자~15 영문,숫자)'} value={loginId}

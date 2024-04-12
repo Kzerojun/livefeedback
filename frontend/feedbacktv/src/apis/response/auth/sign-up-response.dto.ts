@@ -1,4 +1,4 @@
 import ResponseDto from "../response.dto";
 
-export interface SignUpResponseDto extends ResponseDto {
+export default interface SignUpResponseDto extends ResponseDto {
 }

@@ -1,3 +1,71 @@
+.icon {
+  width: 100%;
+  height: 100%;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
+
+.logout-button {
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 6px;
+  width: 100px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: white;
+
+  color: rgba(0, 0, 0, 1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+
+.mypage-button{
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 6px;
+  width: 100px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #f2507e;
+
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+
+.login-button {
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 6px;
+  width: 100px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: white;
+
+  color: rgba(0, 0, 0, 1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+
 .black-large-full-button {
 
   border-radius: 46px;
@@ -47,4 +115,10 @@
   height: 1px;
   background-color: #ddd;
   margin: 0 10px;
+}
+
+.search-light-icon {
+  background-image: url(assets/image/search-light.png);
+  width: 20px;
+  height: 20px;
 }

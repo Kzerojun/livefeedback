@@ -54,10 +54,16 @@
   width: 380px;
 }
 
-.auth-card-title-box h1{
+.auth-card-title-logo {
   font-size: 2em;
   margin-bottom: 20px;
+  font-family: 'Lobster', serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "MORF" 17, "SHLN" 0;
 }
+
 .auth-card-logo-part {
   color: #E53D00;
 }
