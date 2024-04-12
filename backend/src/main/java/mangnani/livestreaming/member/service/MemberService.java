@@ -1,10 +1,12 @@
 package mangnani.livestreaming.member.service;
 
 
-import mangnani.livestreaming.member.entity.Member;
+import mangnani.livestreaming.member.dto.response.GetSignInMemberResponseDto;
+import org.springframework.http.ResponseEntity;
 
 public interface MemberService {
 
-	Member findByLoginId(String loginId);
+	ResponseEntity<GetSignInMemberResponseDto> getSignInUser(String email);
+
 
 }

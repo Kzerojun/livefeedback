@@ -3,10 +3,14 @@ package mangnani.livestreaming.global.dto;
 public interface ResponseCode {
 
 	//HTTP STATUS 200
+
+	String SUCCESS = "SU";
 	String LOGIN_SUCCESS = "LS";
 	String DONATION_SUCCESS = "DS";
 	String PATCH_IMAGE_SUCCESS = "PIS";
 	String Patch_Description_SUCCESS = "PDS";
+	String REISSUE_TOKEN_SUCCESS = "RTS";
+
 
 	//HTTP STATUS 201
 	String SIGN_UP_SUCCESS = "SUS";
@@ -25,5 +29,8 @@ public interface ResponseCode {
 	String LOGIN_FAILED = "LF";
 
 	String NO_PERMISSION_TOKEN = "NPT";
+
+	//HTTP STATUS 500
+	String DATABASE_ERROR = "DBE";
 
 }

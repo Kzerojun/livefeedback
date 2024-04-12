@@ -2,11 +2,11 @@ package mangnani.livestreaming.auth.service.implement;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import mangnani.livestreaming.auth.dto.request.LogoutRequest;
-import mangnani.livestreaming.auth.dto.request.ReissueRequest;
+import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.auth.dto.response.LogoutResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
 	private final MemberRepository memberRepository;
@@ -37,13 +38,15 @@ public class AuthServiceImpl implements AuthService {
 
 	private final JwtTokenProvider jwtTokenProvider;
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	private static final String REFRESH_TOKEN_PREFIX = "RT:";
 
-	private static final String LOGOUT_STATUS_VALUE = "logout";
+	private static final String BLACKLIST = "BL:"; //액세스 토큰 탈취 방지 블랙리스트 추가
+
 	@Override
 	public ResponseEntity<SignUpResponse> signUp(SignUpRequest signUpRequest) {
+
 		if (memberRepository.existsByLoginId(signUpRequest.getLoginId())) {
 			throw new DuplicatedLoginIdException();
 		}
@@ -63,6 +66,7 @@ public class AuthServiceImpl implements AuthService {
 		memberRepository.save(user);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(SignUpResponse.success());
+
 	}
 
 	@Override
@@ -85,47 +89,40 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<?> reissue(ReissueRequest reissue) {
-		if (!jwtTokenProvider.validate(reissue.getRefreshToken())) {
+	public ResponseEntity<String> reissue(String accessToken, String refreshToken) {
+
+		if (!jwtTokenProvider.validate(refreshToken)) {
 			throw new NoPermissionTokenException();
 		}
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(
-				reissue.getAccessToken());
+				accessToken);
 
-		String refreshToken = (String) redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName());
-		if (!refreshToken.equals(reissue.getRefreshToken())) {
+		String RedisRefreshToken = redisTemplate.opsForValue()
+				.get(REFRESH_TOKEN_PREFIX + authentication.getName());
+
+		if (!refreshToken.equals(RedisRefreshToken)) {
 			throw new NoPermissionTokenException();
 		}
 
-		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
-		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
-				loginResponse.getRefreshToken(),
-				loginResponse.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(jwtTokenProvider.generateAccessToken(authentication));
 	}
 
 	@Override
-	public ResponseEntity<Void> logout(LogoutRequest logoutRequest) {
+	public ResponseEntity<LogoutResponse> logout(String userLoginId, String accessToken) {
 
-		if (!jwtTokenProvider.validate(logoutRequest.getAccessToken())) {
-			return ResponseEntity.badRequest().build();
+		//리프레쉬 토큰 삭제
+		String refreshTokenKey = REFRESH_TOKEN_PREFIX + userLoginId;
+		String refreshToken = redisTemplate.opsForValue().get(refreshTokenKey);
+		if (refreshToken != null) {
+			redisTemplate.delete(refreshTokenKey);
 		}
 
-		Authentication authentication = jwtTokenProvider.getAuthentication(
-				logoutRequest.getAccessToken());
-
-		//Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지
-		if (redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + authentication.getName()) != null) {
-			// Refresh Token 삭제
-			redisTemplate.delete(REFRESH_TOKEN_PREFIX + authentication.getName());
-		}
-
-		Long expiration = jwtTokenProvider.getExpiration(logoutRequest.getAccessToken());
+		//액세스 토큰 블랙리스트 등록
+		Long expiration = jwtTokenProvider.getExpiration(accessToken);
 		redisTemplate.opsForValue()
-				.set(logoutRequest.getRefreshToken(), LOGOUT_STATUS_VALUE, expiration, TimeUnit.MILLISECONDS);
+				.set(BLACKLIST + accessToken, "", expiration, TimeUnit.MILLISECONDS);
 
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(LogoutResponse.success());
 	}
 }

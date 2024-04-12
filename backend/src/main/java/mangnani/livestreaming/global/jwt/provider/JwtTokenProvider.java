@@ -2,8 +2,6 @@ package mangnani.livestreaming.global.jwt.provider;
 
 import io.jsonwebtoken.Jwts;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
@@ -70,6 +66,21 @@ public class JwtTokenProvider {
 				.build();
 	}
 
+	public String generateAccessToken(Authentication authentication) {
+		String authorities = authentication.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(","));
+
+		//Access Token 생성
+		Date accessTokenExpiresIn = Date.from(Instant.now().plusMillis(accessTokenExpireTime));
+		return Jwts.builder()
+				.setSubject(authentication.getName())
+				.claim(AUTHORITIES_KEY, authorities)
+				.setExpiration(accessTokenExpiresIn)
+				.signWith(SignatureAlgorithm.HS256, jwtSecret)
+				.compact();
+	}
+
 	public boolean validate(String accessToken) {
 		try {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(accessToken);
@@ -100,6 +111,7 @@ public class JwtTokenProvider {
 	}
 
 	public Long getExpiration(String accessToken) {
+
 		Date expiration = Jwts.parser()
 				.setSigningKey(jwtSecret)
 				.parseClaimsJws(accessToken)
@@ -118,5 +130,4 @@ public class JwtTokenProvider {
 			return exception.getClaims();
 		}
 	}
-
 }
