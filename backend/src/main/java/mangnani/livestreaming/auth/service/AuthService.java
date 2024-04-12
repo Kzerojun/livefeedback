@@ -5,6 +5,7 @@ import mangnani.livestreaming.auth.dto.request.ReissueRequest;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.auth.dto.response.LogoutResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -14,9 +15,9 @@ public interface AuthService {
 
 	ResponseEntity<LoginResponse> login(LoginRequest loginRequest);
 
-	ResponseEntity<Void> logout(String userLoginId,String accessToken);
+	ResponseEntity<LogoutResponse> logout(String userLoginId,String accessToken);
 
-	ResponseEntity<?> reissue(ReissueRequest reissueRequest);
+	ResponseEntity<String> reissue(String accessToken, String refreshToken);
 
 
 }

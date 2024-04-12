@@ -3,20 +3,17 @@ package mangnani.livestreaming.auth.service.implement;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mangnani.livestreaming.auth.dto.request.LogoutRequest;
-import mangnani.livestreaming.auth.dto.request.ReissueRequest;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.auth.dto.response.LogoutResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
 import mangnani.livestreaming.auth.exception.LoginFailedException;
 import mangnani.livestreaming.auth.service.AuthService;
-import mangnani.livestreaming.global.dto.ResponseDto;
 import mangnani.livestreaming.global.exception.NoPermissionTokenException;
 import mangnani.livestreaming.global.jwt.provider.JwtTokenProvider;
-import mangnani.livestreaming.global.jwt.service.TokenBlackListService;
 import mangnani.livestreaming.member.entity.Member;
 import mangnani.livestreaming.member.repository.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -92,30 +89,27 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<?> reissue(ReissueRequest reissue) {
-		if (!jwtTokenProvider.validate(reissue.getRefreshToken())) {
+	public ResponseEntity<String> reissue(String accessToken, String refreshToken) {
+
+		if (!jwtTokenProvider.validate(refreshToken)) {
 			throw new NoPermissionTokenException();
 		}
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(
-				reissue.getAccessToken());
+				accessToken);
 
-		String refreshToken = (String) redisTemplate.opsForValue()
+		String RedisRefreshToken = redisTemplate.opsForValue()
 				.get(REFRESH_TOKEN_PREFIX + authentication.getName());
-		if (!refreshToken.equals(reissue.getRefreshToken())) {
+
+		if (!refreshToken.equals(RedisRefreshToken)) {
 			throw new NoPermissionTokenException();
 		}
 
-		LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
-		redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + authentication.getName(),
-				loginResponse.getRefreshToken(),
-				loginResponse.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(jwtTokenProvider.generateAccessToken(authentication));
 	}
 
 	@Override
-	public ResponseEntity<Void> logout(String userLoginId, String accessToken) {
+	public ResponseEntity<LogoutResponse> logout(String userLoginId, String accessToken) {
 
 		//리프레쉬 토큰 삭제
 		String refreshTokenKey = REFRESH_TOKEN_PREFIX + userLoginId;
@@ -129,6 +123,6 @@ public class AuthServiceImpl implements AuthService {
 		redisTemplate.opsForValue()
 				.set(BLACKLIST + accessToken, "", expiration, TimeUnit.MILLISECONDS);
 
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body(LogoutResponse.success());
 	}
 }

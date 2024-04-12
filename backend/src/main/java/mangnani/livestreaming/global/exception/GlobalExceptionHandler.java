@@ -27,9 +27,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(ResponseDto.validationFailed());
 	}
 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ResponseDto> databaseExceptionHandler(Exception exception) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(ResponseDto.databaseError());
-	}
+//	@ExceptionHandler(RuntimeException.class)
+//	public ResponseEntity<ResponseDto> databaseExceptionHandler(Exception exception) {
+//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//				.body(ResponseDto.databaseError());
+//	}
+
 }

@@ -38,12 +38,10 @@ public class WebSecurityConfig {
 				.csrf(CsrfConfigurer::disable)
 				.httpBasic(HttpBasicConfigurer::disable)
 				.logout(AbstractHttpConfigurer::disable)
-				.headers((headerConfig) -> headerConfig.frameOptions(
-						FrameOptionsConfig::disable))
 				.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
 						SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-						.requestMatchers("/**", "/signup", "/station/**", "/logout").permitAll()
+						.requestMatchers("/**", "/signup", "/station/**", "/logout","/member/**").permitAll()
 						.anyRequest().authenticated()
 				).addFilterBefore(jwtAuthenticationFilter,
 						UsernamePasswordAuthenticationFilter.class)

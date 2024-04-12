@@ -3,12 +3,13 @@ package mangnani.livestreaming.global.dto;
 public interface ResponseMessage {
 
 	//HTTP STATUS 200
+
+	String SUCCESS = "성공";
 	String DONATION_SUCCESS = "도네이션 성공";
 	String LOGIN_SUCCESS = "로그인 성공";
 	String SIGNUP_SUCCESS = "회원가입 성공";
 	String PATCH_IMAGE_SUCCESS = "방송국 이미지 변경 성공";
 	String PATCH_STATION_DESCRIPTION = "방송국 설명 변경 성공";
-
 	String REISSUE_TOKEN_SUCCESS = "토큰 재발급 성공";
 
 	//HTTP STATUS 400
