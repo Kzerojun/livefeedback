@@ -1,6 +1,7 @@
 package mangnani.livestreaming.member.service.implement;
 
 import lombok.RequiredArgsConstructor;
+import mangnani.livestreaming.member.dto.response.GetMemberResponse;
 import mangnani.livestreaming.member.dto.response.GetSignInMemberResponseDto;
 import mangnani.livestreaming.member.entity.Member;
 import mangnani.livestreaming.member.exception.NoExistedMember;
@@ -21,4 +22,14 @@ public class MemberServiceImpl implements MemberService {
 		return ResponseEntity.ok().body(GetSignInMemberResponseDto.success(member.getLoginId(),
 				member.getNickname()));
 	}
+
+	@Override
+	public ResponseEntity<GetMemberResponse> getMember(String userId) {
+		Member member = memberRepository.findByLoginId(userId).orElseThrow(NoExistedMember::new);
+		return ResponseEntity.ok()
+				.body(GetMemberResponse.success(member.getLoginId(), member.getNickname(),
+						member.getProfileImage()));
+	}
+
+
 }

@@ -1,12 +1,14 @@
 package mangnani.livestreaming.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import mangnani.livestreaming.member.dto.response.GetMemberResponse;
 import mangnani.livestreaming.member.dto.response.GetSignInMemberResponseDto;
 import mangnani.livestreaming.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,4 +24,10 @@ public class MemberController {
 			@AuthenticationPrincipal User user) {
 		return memberService.getSignInUser(user.getUsername());
 	}
+
+	@GetMapping("/{userId}")
+	public ResponseEntity<GetMemberResponse> getMember(@PathVariable String userId) {
+		return memberService.getMember(userId);
+	}
+
 }
