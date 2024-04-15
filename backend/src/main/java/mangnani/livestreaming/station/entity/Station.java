@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import lombok.Getter;
 import mangnani.livestreaming.member.entity.Member;
 
 @Entity
+@Getter
 public class Station {
 
 	@Id
