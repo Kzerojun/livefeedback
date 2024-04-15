@@ -2,6 +2,7 @@ package mangnani.livestreaming.donation.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,12 +11,16 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mangnani.livestreaming.member.entity.Member;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Donation {
 
 	@Id
@@ -42,11 +47,10 @@ public class Donation {
 	private LocalDateTime donatedAt;
 
 	@Builder
-	public Donation(Member donor, Member recipient, int startCandyAmount,String message) {
+	public Donation(Member donor, Member recipient, int starCandyAmount,String message) {
 		this.donor = donor;
 		this.recipient = recipient;
-		this.starCandyAmount = startCandyAmount;
+		this.starCandyAmount = starCandyAmount;
 		this.message = message;
 	}
-
 }
