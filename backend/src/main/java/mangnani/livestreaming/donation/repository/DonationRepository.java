@@ -18,7 +18,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 			+ "GROUP BY d.donor "
 			+ "ORDER BY SUM(d.starCandyAmount) DESC "
 	)
-	Page<MemberView> findTop20DonorsByStarCandyAmountForRecipient(String recipientId,
+	List<MemberView> findTop20DonorsByStarCandyAmountForRecipient(String recipientId,
 			Pageable pageable);
 
 	@Query("SELECT d.donor.loginId as loginId, d.donor.nickname as nickname, d.donor.profileImage as profileImage "
@@ -27,6 +27,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 			+ "GROUP BY d.donor "
 			+ "ORDER BY SUM(d.starCandyAmount) DESC "
 	)
-	Page<MemberView> findTop3DonorsByStarCandyAmountForRecipient(String recipientId,
+	List<MemberView> findTop3DonorsByStarCandyAmountForRecipient(String recipientId,
 			Pageable pageable);
 }

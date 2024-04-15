@@ -48,7 +48,7 @@ public class DonationServiceImpl implements DonationService {
 	@Override
 	public ResponseEntity<GetFanListResponse> getTop20FanMember(String userId, Pageable pageable) {
 		List<MemberView> memberViews = donationRepository.findTop20DonorsByStarCandyAmountForRecipient(
-				userId, pageable).toList();
+				userId, pageable);
 
 		return ResponseEntity.ok().body(GetFanListResponse.success(memberViews));
 	}
@@ -56,7 +56,7 @@ public class DonationServiceImpl implements DonationService {
 	@Override
 	public ResponseEntity<GetFanListResponse> getTop3FanMember(String userId, Pageable pageable) {
 		List<MemberView> memberViews = donationRepository.findTop3DonorsByStarCandyAmountForRecipient(
-						userId, pageable).toList();
+						userId, pageable);
 
 		return ResponseEntity.ok().body(GetFanListResponse.success(memberViews));
 	}
