@@ -7,6 +7,7 @@ import mangnani.livestreaming.member.exception.NoExistedMember;
 import mangnani.livestreaming.member.repository.MemberRepository;
 import mangnani.livestreaming.station.dto.request.PatchDescriptionRequest;
 import mangnani.livestreaming.station.dto.request.PatchStationImageRequest;
+import mangnani.livestreaming.station.dto.response.GetStationResponse;
 import mangnani.livestreaming.station.dto.response.PatchDescriptionResponse;
 import mangnani.livestreaming.station.dto.response.PatchStationImageResponse;
 import mangnani.livestreaming.station.entity.Station;
@@ -26,6 +27,15 @@ public class StationServiceImpl implements StationService {
 	private final MemberRepository memberRepository;
 
 	@Override
+	public ResponseEntity<GetStationResponse> getStation(String userId) {
+		Member member = memberRepository.findMemberWithStationByLoginId(userId)
+				.orElseThrow(NoExistedMember::new);
+
+		return ResponseEntity.ok()
+				.body(GetStationResponse.success(member.getStation().getDescription(), member.getStation().getImage()));
+	}
+
+	@Override
 	@Transactional
 	public ResponseEntity<PatchStationImageResponse> patchStationImage(
 			PatchStationImageRequest patchStationImageRequest, String userLoginId) {
@@ -43,11 +53,10 @@ public class StationServiceImpl implements StationService {
 	@Transactional
 	public ResponseEntity<PatchDescriptionResponse> patchDescription(
 			PatchDescriptionRequest patchDescription, String userLoginId) {
-		Member member = memberRepository.findByLoginId(userLoginId)
+		Member member = memberRepository.findMemberWithStationByLoginId(userLoginId)
 				.orElseThrow(NoExistedMember::new);
-		Station station = stationRepository.findByMember(member).orElseThrow(NoExistedStation::new);
 
-		station.updateDescription(patchDescription.getDescription());
+		member.getStation().updateDescription(patchDescription.getDescription());
 
 		return ResponseEntity.ok().body(PatchDescriptionResponse.success());
 	}

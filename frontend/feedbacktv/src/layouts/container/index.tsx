@@ -1,7 +1,6 @@
 import React from 'react'
 import {Outlet, useLocation} from "react-router-dom";
 import Header from "../header";
-import {AUTH_PATH} from "../../constants";
 
 
 //     component : 레이아웃     //

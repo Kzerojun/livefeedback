@@ -9,7 +9,7 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 public class PatchDescriptionResponse extends ResponseDto {
 
 	private PatchDescriptionResponse() {
-		super(ResponseCode.Patch_Description_SUCCESS, ResponseMessage.PATCH_STATION_DESCRIPTION);
+		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 	}
 
 	public static PatchDescriptionResponse success() {

@@ -1,0 +1,143 @@
+
+.donation-box {
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background-color: #fff;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+
+  width: 90%; /* Could be more or less, depends on the design */
+  margin: 30px auto;
+}
+
+.donation-box-top {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #dcdcdc;
+  padding: 15px;
+}
+
+.donation-box-recipient-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.donation-box-recipient-nickname {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.donation-box-donate {
+  overflow: hidden;
+  position: relative;
+  z-index: 11;
+  margin-top: 15px;
+  height: 52px;
+  background: #fff;
+}
+
+
+.text-default {
+  position: absolute;
+  top: 0;
+  left: 13px;
+  font-size: 16px;
+  line-height: 52px;
+  color: #111;
+  letter-spacing: -1px;
+  font-weight: bold;
+}
+
+.donation-box-donate input {
+  position: absolute;
+  top: 7px;
+  right: 53px;
+  width: 170px;
+  padding: 0;
+  text-align: right;
+  color: #016cfe;
+  border: none;
+  outline: none;
+  font-weight: bold;
+  font-size: 26px;
+  background-color: #fff;
+}
+
+.text-count{
+  position: absolute;
+  top: 0;
+  right: 36px;
+  font-size: 16px;
+  line-height: 53px;
+  font-weight: bold;
+  color: #111;
+  transition: all 0.3s cubic-bezier(0.56, 0.12, 0.12, 0.98);
+}
+
+
+.donation-box-starcandy {
+  display: flex;
+
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.donation-box-starcandy-text {
+  display: flex;
+  gap: 15px;
+}
+
+
+.donation-box-buy-button {
+
+}
+
+.donation-box-bottom {
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+
+  gap: 30px;
+}
+
+.donation-box-donate-button, .donation-box-donate-cancel, .donation-box-buy-button {
+  padding: 10px 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.donation-box-buy-button {
+  font-size: 13px;
+
+  background-color: #019cfe;
+  color: white;
+}
+
+/* 선물하기 버튼 스타일 */
+.donation-box-donate-button {
+  background-color: #016cfe;
+  color: white;
+}
+
+/* 선물하기 버튼 호버 스타일 */
+.donation-box-donate-button:hover {
+  background-color: #019cfe;
+}
+
+/* 취소 버튼 스타일 */
+.donation-box-donate-cancel {
+  background-color: #f44336; /* 밝은 빨간색 */
+  color: white;
+}
+
+/* 취소 버튼 호버 스타일 */
+.donation-box-donate-cancel:hover {
+  background-color: #e57373; /* 더 밝은 빨간색 */
+}

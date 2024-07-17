@@ -1,0 +1,172 @@
+.pay-wrapper {
+  max-width: 500px;
+  padding: 10px;
+
+}
+
+.pay-box {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 20px;
+
+  gap: 15px;
+
+}
+
+.pay-header {
+  font-size: 25px;
+  font-weight: 440;
+}
+
+.pay-body {
+  display: flex;
+  flex-direction: column;
+
+  gap : 20px;
+}
+
+.pay-normal {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid #999999;
+  height: 150px;
+  border-radius: 10px;
+}
+
+.pay-normal-label {
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+.pay-normal-method {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: space-between;
+}
+
+.pay-card-box {
+  width: 150px;
+  height: 100px;
+
+  border: 1px solid;
+  text-align: center;
+  margin-left: 50px;
+  margin-top: 10px;
+}
+
+.card-icon-image-box {
+  width: 130px;
+  height: 50px;
+  margin: 10px;
+}
+
+.pay-mobile-box {
+  width: 150px;
+  height: 100px;
+
+  border: 1px solid;
+  text-align: center;
+
+  margin-right: 50px;
+  margin-top: 10px;
+}
+
+.mobile-icon-image-box {
+  width: 130px;
+  height: 50px;
+  margin: 10px;
+}
+
+.pay-easy{
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid #999999;
+  height: 100px;
+  border-radius: 10px;
+}
+
+.pay-easy-label {
+  padding-top: 5px;
+  padding-left: 10px;
+}
+
+.pay-easy-method {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.pay-naver-image-box {
+  width: 200px;
+  height: 50px;
+
+  margin-top: 10px;
+  margin-left: 30px;
+}
+
+.pay-kakao-image-box {
+  width: 150px;
+  height: 50px;
+
+  margin-top: 10px;
+  margin-right: 30px;
+}
+
+.pay-kakao-image-box :hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.pay-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+
+}
+
+.pay-product-detail {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 10px;
+}
+
+.pay-product-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.pay-product-amount {
+  font-size: 20px;
+  font-weight: bold;
+  color: #019cfe;
+}
+
+.pay-product-price {
+
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 10px;
+
+
+  font-size: 20px;
+  font-weight: bold;
+}
+
+
+.pay-product-price-color {
+  color: #019cfe;
+  font-size: 20px;
+  font-weight: bold;
+}

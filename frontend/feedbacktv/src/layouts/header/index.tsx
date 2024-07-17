@@ -1,19 +1,25 @@
 import './style.css'
 import {useNavigate, useParams} from "react-router-dom";
-import {AUTH_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH} from "../../constants";
-import useLoginUserStore from "../../stores/login-user.store";
 import {useCookies} from "react-cookie";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {KeyboardEvent} from 'react';
-import {logoutRequest, logInRequest} from "../../apis";
-import ResponseDto from "../../apis/response/response.dto";
-import {LogoutResponseDto} from "../../apis/response/auth";
-
+import {LogoutResponseDto} from "../../types/response/auth";
+import ResponseDto from "../../types/response/response.dto";
+import {
+  AUTH_PATH,
+  BROAD_CAST_PATH,
+  MAIN_PATH,
+  SEARCH_PATH,
+  STATION_PATH,
+  USER_PATH
+} from "../../constants/paths";
+import {logoutRequest} from "../../apis/auth";
+import useLoginUserStore from "../../stores/login-user.store";
+import {VideoCameraTwoTone} from '@ant-design/icons';
 
 export default function Header() {
 
   const navigate = useNavigate();
-
 
   // state : 로그인 유저 상태  //
   const {loginUser, resetLoginUser} = useLoginUserStore();
@@ -68,7 +74,10 @@ export default function Header() {
           <input className='header-search-input' type='text' placeholder='검색어를 입력해주세요.'
                  value={word} onChange={onSearchWordChangeHandler}
                  onKeyDown={onSearchWordKeyDownHandler}/>
-          <div className='icon search-light-icon'></div>
+          <div className='search-icon-box'>
+            <div className='icon search-light-icon'></div>
+          </div>
+
         </div>
     );
   };
@@ -76,14 +85,12 @@ export default function Header() {
   // component : 로그인 또는 마이페이지 버튼 컴포넌트
   const MyPageButton = () => {
 
-    //     state : 아이디 path variable 상태     //
-    const {userLoginId} = useParams();
-
     //     event handler : 마이페이지 버튼 클릭 이벤트 처리 함수      //
     const onMyPageButtonClickHandler = () => {
       if (!loginUser) return;
-      const {loginId} = loginUser;
-      navigate(USER_PATH(loginId));
+      console.log(loginUser);
+      const{userId} = loginUser
+      navigate(USER_PATH(userId));
     };
 
     //     event handler : 로그아웃 버튼 클릭 이벤트 처리 함수      //
@@ -104,6 +111,17 @@ export default function Header() {
       navigate(AUTH_PATH());
     };
 
+    const onMyStationButtonClickHandler = () =>{
+      if (!loginUser) return;
+      const {userId} = loginUser;
+      navigate(STATION_PATH(userId));
+    }
+
+    const onBroadcastButtonClickHandler = () =>{
+      if(!loginUser) return;
+      navigate(BROAD_CAST_PATH());
+    }
+
     // function : logout response 처리함수
     const logoutResponse = (responseBody: LogoutResponseDto | ResponseDto | null) => {
       if (!responseBody) return;
@@ -120,7 +138,12 @@ export default function Header() {
     if (isLogin) {
       return (
           <>
+            <div className='broadcast-icon-box'>
+              <VideoCameraTwoTone onClick={onBroadcastButtonClickHandler} style={{ fontSize: '35px' }} />
+            </div>
             <div className='mypage-button' onClick={onMyPageButtonClickHandler}>{'마이페이지'}</div>
+            <div className='mystation-button'
+                 onClick={onMyStationButtonClickHandler}>{'내 방송국'}</div>
             <div className='logout-button' onClick={onSignOutButtonClickHandler}>{'로그아웃'}</div>
           </>
       )
@@ -139,9 +162,6 @@ export default function Header() {
       <div id='header'>
         <div className='header-container'>
           <div className='header-left-box' onClick={onLogoClickHandler}>
-            <div className='icon-box'>
-              <div className='icon logo-dark-icon'></div>
-            </div>
             <div className='header-logo'>{'FeedBack'}<span
                 className='header-logo-part'>{'TV'}</span></div>
           </div>

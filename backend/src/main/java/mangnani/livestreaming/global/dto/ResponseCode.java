@@ -2,35 +2,32 @@ package mangnani.livestreaming.global.dto;
 
 public interface ResponseCode {
 
-	//HTTP STATUS 200
-
+	// HTTP STATUS 200
 	String SUCCESS = "SU";
-	String LOGIN_SUCCESS = "LS";
-	String DONATION_SUCCESS = "DS";
-	String PATCH_IMAGE_SUCCESS = "PIS";
-	String Patch_Description_SUCCESS = "PDS";
-	String REISSUE_TOKEN_SUCCESS = "RTS";
 
-
-	//HTTP STATUS 201
-	String SIGN_UP_SUCCESS = "SUS";
-
-	//HTTP STATUS 400
+	// HTTP STATUS 400
 	String DUPLICATED_LOGIN_ID = "DLI";
 	String DUPLICATED_NICKNAME = "DN";
+	String NO_EXISTED_MEMBER = "NO_EXISTED_MEMBER";
 
-	String NO_EXISTED_MEMBER = "NEM";
-
+	String INVALID_FILE_TYPE = "INVALID_FILE_TYPE";
 	String VALIDATION_FAILED = "VF";
-
 	String NO_EXISTED_STATION = "NES";
+	String NO_EXISTED_BOARD_CATEGORY = "NEC";
+	String NO_EXISTED_LIVE_STREAM = "NELS";
+	String NO_EXISTED_BROADCAST = "NEB";
+	String NO_EXISTED_BOARD = "NB";
+	String PASSWORD_MISMATCH = "PM";
 
-	//HTTP STATUS 401
+
+	// HTTP STATUS 401
 	String LOGIN_FAILED = "LF";
-
 	String NO_PERMISSION_TOKEN = "NPT";
+	String UNAUTHORIZED_KEY = "UNAUTHORIZED_KEY";
 
-	//HTTP STATUS 500
+	// HTTP STATUS 409
+	String STREAM_ALREADY_ACTIVE = "SAA";  // 스트림이 이미 활성 상태일 때
+
+	// HTTP STATUS 500
 	String DATABASE_ERROR = "DBE";
-
 }

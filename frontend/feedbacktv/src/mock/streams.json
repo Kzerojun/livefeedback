@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Gaming Stream 1",
+    "description": "Exciting gameplay of XYZ",
+    "thumbnailUrl": "path/to/thumbnail1.jpg",
+    "streamerName": "Gamer1",
+    "category": "C"
+  },
+  {
+    "id": 2,
+    "title": "Music Stream 1",
+    "description": "Live concert",
+    "thumbnailUrl": "path/to/thumbnail2.jpg",
+    "streamerName": "Musician1",
+    "category": "JAVA"
+  }
+]

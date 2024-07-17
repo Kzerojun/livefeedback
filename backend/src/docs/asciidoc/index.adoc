@@ -1,0 +1,104 @@
+= feedbackTv API 명세서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:sectnums:
+:docinfo: shared-head
+
+= Auth
+== 로그인
+=== '로그인'
+==== '성공'
+operation::auth/login/success[snippets='http-request,http-response']
+
+=== '비밀번호 일치 검증'
+==== '실패'
+operation::auth/login/fail/invalidPassword[snippets='http-request,http-response']
+
+=== '회원가입된 유저인지 검증'
+==== '실패'
+operation::auth/login/fail/noExistedMember[snippets='http-request,http-response']
+
+== '로그아웃'
+
+== '재발급'
+
+== 회원가입
+=== '아이디 검증'
+==== '실패'
+operation::auth/signup/fail/loginId[snippets='http-request,http-response']
+
+=== '중복된 아이디 검증'
+==== '실패'
+operation::auth/signup/fail/duplicated_loginId[snippets='http-response']
+
+=== '중복된 닉네임 검증'
+==== '실패'
+operation::auth/signup/fail/duplicated_nickname[snippets='http-response']
+
+=== '회원가입'
+==== '성공'
+operation::auth/signup/success[snippets='http-request,http-response']
+
+= Board
+== '게시글 세부사항 조회'
+=== '게시글 존재 X - 실패'
+operation::board/get-board-detail/fail/no-existed-board[snippets='http-request,http-response']
+
+== '게시글 정보 조회'
+=== '성공'
+operation::board/get-board-list/success[snippets='http-request,http-response']
+=== '방송국 개설 X - 실패'
+operation::board/get-board-list/fail/no-existed-station[snippets='http-request,http-response']
+=== '카테고리 존재 X - 실패'
+operation::board/get-board-list/fail/no-category[snippets='http-request,http-response']
+
+== '게시글 작성'
+=== '성공'
+operation::board/post/success[snippets='http-request,http-response']
+=== '실패'
+operation::board/post/fail/no-existed-member[snippets='http-request,http-response']
+
+= Broadcast
+== '방송 시작'
+=== '성공'
+operation::broadcast/start/success[snippets='http-request,http-response']
+
+=== '실패 - 잘못된 요청'
+operation::broadcast/start/fail/inValidRequest[snippets='http-request,http-response']
+
+== '방송 조회'
+=== '성공'
+operation::broadcast/info/success[snippets='http-request,http-response']
+=== '실패 - 방송 존재X'
+operation::broadcast/info/fail/noExistedBroadcast[snippets='http-request,http-response']
+
+== '카테고리별 방송조회'
+=== '성공'
+operation::broadcast/category/success[snippets='http-request,http-response']
+=== '실패'
+operation::broadcast/category/fail
+
+= File
+== '프로필 파일 이미지 업로드'
+=== '성공 - JPG'
+operation::file/uploadProfileImage/success/jpeg[snippets='http-request,http-response']
+
+=== '성공 - PNG'
+operation::file/uploadProfileImage/success/png[snippets='http-request,http-response']
+
+=== '실패 - 잘못된 파일 타입'
+operation::file/uploadProfileImage/fail/invalidFileType[snippets='http-request,http-response']
+
+== '게시글 이미지 파일 업로드'
+=== '성공 - JPG'
+operation::file/uploadBoardImages/success/jpeg[snippets='http-request,http-response']
+
+=== '성공 - PNG'
+operation::file/uploadBoardImages/success/png[snippets='http-request,http-response']
+
+=== '실패 - 잘못된 파일 타입'
+operation::file/uploadBoardImages/fail/invalidFileType[snippets='http-request,http-response']

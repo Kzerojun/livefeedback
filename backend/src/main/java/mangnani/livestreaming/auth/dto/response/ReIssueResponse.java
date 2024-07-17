@@ -15,7 +15,7 @@ public class ReIssueResponse extends ResponseDto {
 
 	@Builder
 	public ReIssueResponse(String grantType, String accessToken,Long accessTokenExpirationTime){
-		super(ResponseCode.REISSUE_TOKEN_SUCCESS, ResponseMessage.REISSUE_TOKEN_SUCCESS);
+		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		this.grantType = grantType;
 		this.accessToken = accessToken;
 		this.accessTokenExpirationTime = accessTokenExpirationTime;

@@ -1,16 +1,15 @@
 import {ChangeEvent, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useCookies} from "react-cookie";
-import LoginResponseDto from "../../apis/response/auth/login-response.dto";
-import ResponseDto from "../../apis/response/response.dto";
-import {LoginRequestDto} from "../../apis/request/auth";
 import InputBox from "../../components/InputBox";
-import {logInRequest, signUpRequest} from "../../apis";
 import {KeyboardEvent} from 'react';
 import './style.css';
-import SignUpRequestDto from "../../apis/request/auth/sign-up-request.dto";
-import SignUpResponseDto from "../../apis/response/auth/sign-up-response.dto";
-import {MAIN_PATH} from "../../constants";
+import {LoginResponseDto, SignUpResponseDto} from "../../types/response/auth";
+import ResponseDto from "../../types/response/response.dto";
+import {LoginRequestDto, SignUpRequestDto} from "../../types/request/auth";
+import {MAIN_PATH} from "../../constants/paths";
+import {logInRequest, signUpRequest} from "../../apis/auth";
+import {message} from "antd";
 
 export default function Authentication() {
 
@@ -49,19 +48,24 @@ export default function Authentication() {
     const [error, setError] = useState<boolean>(false);
 
 
-    //    function : sign in response 처리 함수     //
+    //    function : log in response 처리 함수     //
     const logInResponse = (responseBody: LoginResponseDto | ResponseDto | null) => {
       if (!responseBody) {
-        alert('네트워크 이상입니다.');
+        message.error('서버 에러입니다.');
         return;
       }
 
       const {code} = responseBody;
       if (code === 'LF' || code === 'VF') {
+        message.error("아이디 또는 비밀번호가 일치하지 않습니다.");
         setError(true);
+        return;
       }
 
-      if (code !== 'LS') return;
+      if (code !== 'SU') {
+        message.error('서버 에러입니다.');
+        return;
+      }
 
       const {
         accessToken,
@@ -83,6 +87,11 @@ export default function Authentication() {
       );
 
       navigate(MAIN_PATH());
+      message.success('로그인이 완료되었습니다.');
+
+      setTimeout(() => {
+        navigate(MAIN_PATH());
+      }, 10);
     }
 
 
@@ -103,6 +112,9 @@ export default function Authentication() {
     //     event handler : 로그인 버튼 클릭 이벤트 처리     //
     const onSignInButtonClickHandler = () => {
       const requestBody: LoginRequestDto = {loginId, password};
+      if(error) {
+        return;
+      }
       logInRequest(requestBody).then(logInResponse)
     }
 
@@ -135,20 +147,19 @@ export default function Authentication() {
       onSignInButtonClickHandler();
     }
 
-
     //     render : sign in 컴포넌트  렌더링   //
     return (
         <div className='auth-card'>
           <div className='auth-card-box'>
             <div className='auth-card-top'>
               <div className='auth-card-title-box'>
-                <div className='auth-card-title-logo'>FeedBack<span
-                    className='auth-card-logo-part'>TV</span></div>
+                <div className='auth-card-title-logo'>{'FeedBack'}<span
+                    className='auth-card-logo-part'>{'TV'}</span></div>
               </div>
-              <InputBox ref={loginRef} label='아이디' type='text' placeholder='아이디를 입력해주세요.'
+              <InputBox label='아이디' type='text' placeholder='아이디를 입력해주세요.'
                         error={error} value={loginId} onChange={onEmailChangeHandler}
                         onKeyDown={onEmailKeyDownHandler}/>
-              <InputBox ref={passwordRef} label='패스워드' type={passwordType}
+              <InputBox label='패스워드' type={passwordType}
                         placeholder='비밀번호를 입력해주세요.' error={error} value={password}
                         onChange={onPasswordChangeHandler} icon={passwordButtonIcon}
                         onButtonClick={onPasswordButtonClickHandler}
@@ -240,8 +251,9 @@ export default function Authentication() {
         alert('모든 값을 입력하세요.')
       }
 
-      if (code !== 'SUS') return;
+      if (code !== 'SU') return;
 
+      message.success("회원가입이 완료되었습니다.");
       setView('login');
     }
 
@@ -317,7 +329,6 @@ export default function Authentication() {
         return;
       }
 
-      console.log("여기까지온다");
       const requestBody: SignUpRequestDto = {
         loginId, password, nickname
       };
