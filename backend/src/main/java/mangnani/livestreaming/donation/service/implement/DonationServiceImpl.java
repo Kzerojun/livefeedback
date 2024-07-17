@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class DonationServiceImpl implements DonationService {
 
 	private final DonationRepository donationRepository;
-
 	private final MemberRepository memberRepository;
 
 	@Override

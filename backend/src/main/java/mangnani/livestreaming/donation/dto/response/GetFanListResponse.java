@@ -19,7 +19,6 @@ public class GetFanListResponse extends ResponseDto {
 	}
 
 	public static GetFanListResponse success(List<MemberView> memberViews) {
-
 		return new GetFanListResponse(memberViews);
 	}
 }

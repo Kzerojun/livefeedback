@@ -8,16 +8,19 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 @Getter
 public class GetSignInMemberResponseDto extends ResponseDto {
 
-	private String loginId;
+	private String userId;
 	private String nickname;
+	private String streamKey;
 
-	private GetSignInMemberResponseDto(String loginId, String nickname) {
+	private GetSignInMemberResponseDto(String userId, String nickname,String streamKey) {
 		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-		this.loginId = loginId;
+		this.userId = userId;
 		this.nickname = nickname;
+		this.streamKey = streamKey;
 	}
 
-	public static GetSignInMemberResponseDto success(String loginId, String nickname) {
-		return new GetSignInMemberResponseDto(loginId, nickname);
+	public static GetSignInMemberResponseDto success(String loginId, String nickname,String streamKey) {
+		return new GetSignInMemberResponseDto(loginId, nickname,streamKey);
 	}
+
 }

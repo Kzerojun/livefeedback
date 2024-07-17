@@ -9,7 +9,7 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 public class SignUpResponse extends ResponseDto {
 
 	 private SignUpResponse() {
-		super(ResponseCode.SIGN_UP_SUCCESS, ResponseMessage.SIGNUP_SUCCESS);
+		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 	}
 
 	public static SignUpResponse success() {

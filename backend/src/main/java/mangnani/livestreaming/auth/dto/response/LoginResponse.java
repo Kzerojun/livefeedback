@@ -2,6 +2,7 @@ package mangnani.livestreaming.auth.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import mangnani.livestreaming.global.dto.ResponseCode;
 import mangnani.livestreaming.global.dto.ResponseDto;
 import mangnani.livestreaming.global.dto.ResponseMessage;
@@ -20,9 +21,9 @@ public class LoginResponse extends ResponseDto {
 	private final Long refreshTokenExpirationTime;
 
 	@Builder
-	public LoginResponse(String grantType, String accessToken, String refreshToken,Long accessTokenExpirationTime,
+	private LoginResponse(String grantType, String accessToken, String refreshToken, Long accessTokenExpirationTime,
 			Long refreshTokenExpirationTime) {
-		super(ResponseCode.LOGIN_SUCCESS, ResponseMessage.LOGIN_SUCCESS);
+		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		this.grantType = grantType;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;

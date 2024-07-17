@@ -1,0 +1,21 @@
+.buy-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center horizontally */
+  max-width: 1000px;
+  margin: 100px auto 0 auto; /* This centers the wrapper itself in the viewport */
+
+}
+
+.buy-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.buy-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}

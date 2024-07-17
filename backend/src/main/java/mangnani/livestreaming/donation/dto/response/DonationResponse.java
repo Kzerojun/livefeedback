@@ -9,7 +9,7 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 public class DonationResponse extends ResponseDto {
 
 	private DonationResponse() {
-		super(ResponseCode.DONATION_SUCCESS, ResponseMessage.DONATION_SUCCESS);
+		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 	}
 
 	public static DonationResponse success() {

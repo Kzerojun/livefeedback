@@ -17,7 +17,7 @@ import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
 import mangnani.livestreaming.auth.exception.LoginFailedException;
-import mangnani.livestreaming.global.jwt.provider.JwtTokenProvider;
+import mangnani.livestreaming.auth.jwt.provider.JwtTokenProvider;
 import mangnani.livestreaming.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,8 +69,8 @@ public class AuthServiceImplTest {
 		ResponseEntity<SignUpResponse> response = authService.signUp(signUpRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-		assertThat(response.getBody().getCode()).isEqualTo("SUS");
-		assertThat(response.getBody().getMessage()).isEqualTo("회원가입 성공");
+		assertThat(response.getBody().getCode()).isEqualTo("SU");
+		assertThat(response.getBody().getMessage()).isEqualTo("성공");
 		verify(memberRepository, times(1)).save(any());
 	}
 
@@ -124,8 +123,8 @@ public class AuthServiceImplTest {
 		ResponseEntity<LoginResponse> response = authService.login(loginRequest);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody().getMessage()).isEqualTo("로그인 성공");
-		assertThat(response.getBody().getCode()).isEqualTo("LS");
+		assertThat(response.getBody().getMessage()).isEqualTo("성공");
+		assertThat(response.getBody().getCode()).isEqualTo("SU");
 		assertThat(response.getBody().getAccessToken()).isEqualTo("accessToken");
 		assertThat(response.getBody().getRefreshToken()).isEqualTo("refreshToken");
 		assertThat(response.getBody().getGrantType()).isEqualTo("Bearer");
@@ -139,6 +138,14 @@ public class AuthServiceImplTest {
 
 		assertThatThrownBy(() -> authService.login(loginRequest())).isInstanceOf(
 				LoginFailedException.class);
+	}
+
+	@DisplayName("로그아웃 성공")
+	@Test
+	void Logout_Success() {
+		//given
+
+
 	}
 
 	private SignUpRequest signUpRequest() {

@@ -1,4 +1,6 @@
 export default interface User {
-	loginId: string;
+	userId: string;
 	nickname: string;
+	profileImage : string | null;
+	streamKey : string;
 };

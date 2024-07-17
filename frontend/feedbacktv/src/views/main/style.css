@@ -1,0 +1,23 @@
+.main-layout {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.category-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.broadcast-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 100px;
+}

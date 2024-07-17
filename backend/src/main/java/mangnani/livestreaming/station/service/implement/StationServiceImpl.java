@@ -27,6 +27,15 @@ public class StationServiceImpl implements StationService {
 	private final MemberRepository memberRepository;
 
 	@Override
+	public ResponseEntity<GetStationResponse> getStation(String userId) {
+		Member member = memberRepository.findMemberWithStationByLoginId(userId)
+				.orElseThrow(NoExistedMember::new);
+
+		return ResponseEntity.ok()
+				.body(GetStationResponse.success(member.getStation().getDescription(), member.getStation().getImage()));
+	}
+
+	@Override
 	@Transactional
 	public ResponseEntity<PatchStationImageResponse> patchStationImage(
 			PatchStationImageRequest patchStationImageRequest, String userLoginId) {
@@ -44,21 +53,11 @@ public class StationServiceImpl implements StationService {
 	@Transactional
 	public ResponseEntity<PatchDescriptionResponse> patchDescription(
 			PatchDescriptionRequest patchDescription, String userLoginId) {
-		Member member = memberRepository.findByLoginId(userLoginId)
+		Member member = memberRepository.findMemberWithStationByLoginId(userLoginId)
 				.orElseThrow(NoExistedMember::new);
-		Station station = stationRepository.findByMember(member).orElseThrow(NoExistedStation::new);
 
-		station.updateDescription(patchDescription.getDescription());
+		member.getStation().updateDescription(patchDescription.getDescription());
 
 		return ResponseEntity.ok().body(PatchDescriptionResponse.success());
-	}
-
-	@Override
-	public ResponseEntity<GetStationResponse> getStation(String userId) {
-		Member member = memberRepository.findByLoginId(userId).orElseThrow(NoExistedMember::new);
-		Station station = stationRepository.findByMember(member).orElseThrow(NoExistedStation::new);
-
-		return ResponseEntity.ok()
-				.body(GetStationResponse.success(station.getDescription(), station.getImage()));
 	}
 }

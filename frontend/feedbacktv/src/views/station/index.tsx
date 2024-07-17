@@ -1,10 +1,11 @@
+import {Button, Tabs} from 'antd'; // Ant Design의 Tabs 컴포넌트 가져오기
 import {useNavigate, useParams} from "react-router-dom";
 import useLoginUserStore from "../../stores/login-user.store";
 import {useCookies} from "react-cookie";
-import React, {ChangeEvent, useEffect, useRef, useState} from "react";
+import React, {useEffect, useState, useRef, ChangeEvent} from "react";
 import {BoardListItem, Station, User} from "../../types/interface";
 import UserBox from "../../components/UserBox";
-import defaultStationImage from "assets/image/station-default-image.png"
+import defaultStationImage from "assets/image/station-default-image.png";
 import './style.css';
 import BoardItem from "../../components/BoardItem";
 import userBoardStore from "../../stores/board.store";
@@ -24,44 +25,14 @@ import {getUserRequest} from "../../apis/member";
 import {getStationRequest} from "../../apis/station";
 import {getTop3FanListRequest} from "../../apis/donation";
 import BoardDetail from "../../components/BoardDetail";
-import { Button, Checkbox, Divider, Tabs } from 'antd';
 
-const CheckboxGroup = Checkbox.Group;
-
-const operations = <Button>Extra Action</Button>;
-
-const OperationsSlot: Record<PositionType, React.ReactNode> = {
-  left: <Button className="tabs-extra-demo-button">Left Extra Action</Button>,
-  right: <Button>Right Extra Action</Button>,
-};
-
-const options = ['left', 'right'];
-
-type PositionType = 'left' | 'right';
-
-const items = new Array(3).fill(null).map((_, i) => {
-  const id = String(i + 1);
-  return {
-    label: `Tab ${id}`,
-    key: id,
-    children: `Content of tab ${id}`,
-  };
-});
+const {TabPane} = Tabs; // Ant Design의 TabPane 컴포넌트 가져오기
 
 export default function Channel() {
-
-  // state : userId path variable 상태  //
   const {streamerId} = useParams();
-
-  // state : 로그인 유저 상태
   const {loginUser} = useLoginUserStore();
-
-  // state : cookie 상태 //
   const [cookies, setCookies] = useCookies();
-
-  //function : 네비게이트 함수  //
   const navigate = useNavigate();
-
   const [myPage, setMyPage] = useState<boolean>(false);
   const [description, setDescription] = useState<string | null>('');
   const [user, setUser] = useState<User>({
@@ -79,30 +50,34 @@ export default function Channel() {
   const [boardList, setBoardList] = useState<BoardListItem[]>([]);
   const [detailView, setDetailView] = useState<boolean>(false);
   const [selectedBoardId, setSelectedBoardId] = useState<number>(0);
-
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalBoardsSize, setTotalBoardsSize] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [manageView, setManageView] = useState<boolean>(false);
   const onPostButtonClickHandler = () => {
     setPostView(true);
-  }
+  };
 
   const closeBoardDetailHandler = () => {
     setDetailView(false);
-  }
+  };
 
   const onCloseButtonClickHandler = () => {
     setPostView(false);
     resetBoard();
-  }
+  };
 
   const onCategoryClickHandler = (category: string) => {
     setCurrentCategory(category);
-  }
+    setCurrentPage(0);
+    setBoardList([]);
+  };
 
-  const onBoardDetailClickHandler = (boardId : number) => {
-    setSelectedBoardId(boardId)
+  const onBoardDetailClickHandler = (boardId: number) => {
+    setSelectedBoardId(boardId);
     setDetailView(true);
-  }
+  };
 
-  // function : post board response 처리 함수 //
   const postBoardResponse = (responseBody: PostBoardResponseDto | ResponseDto | null) => {
     if (!responseBody) return;
 
@@ -122,16 +97,13 @@ export default function Channel() {
 
     if (code !== 'SU') return;
 
-
     resetBoard();
     if (!streamerId) return;
 
     setPostView(false);
     window.location.reload();
-  }
+  };
 
-
-  // function : get user response 처리 함수  //
   const getUserResponse = (responseBody: GetMemberResponseDto | ResponseDto | null) => {
     if (!responseBody) return;
     const {code} = responseBody;
@@ -149,11 +121,9 @@ export default function Channel() {
 
     const isMyPage = streamerId === loginUser?.userId;
     setMyPage(isMyPage);
-  }
+  };
 
-  // function : get station response 처리 함수  //
   const getStationResponse = (responseBody: GetStationResponseDto | ResponseDto | null) => {
-
     if (!responseBody) return;
     const {code} = responseBody;
 
@@ -168,12 +138,9 @@ export default function Channel() {
 
     const responseStation = responseBody as GetStationResponseDto;
     setStation(responseStation);
-  }
+  };
 
-
-  // function : get fan list response 처리 함수  //
   const getFanListResponse = (responseBody: GetFanListResponseDto | ResponseDto | null) => {
-
     if (!responseBody) return;
     const {code} = responseBody;
 
@@ -187,7 +154,7 @@ export default function Channel() {
 
     const responseFanList = responseBody as GetFanListResponseDto;
     setFans(responseFanList.fans);
-  }
+  };
 
   const getBoardCategoryResponse = (responseBody: GetBoardCategoryListResponseDto | ResponseDto | null) => {
     if (!responseBody) return;
@@ -206,7 +173,7 @@ export default function Channel() {
     if (defaultCategory) {
       setCurrentCategory(defaultCategory.category);
     }
-  }
+  };
 
   const getBoardCategoryListResponse = (responseBody: GetBoardListResponseDto | ResponseDto | null) => {
     if (!responseBody) return;
@@ -220,11 +187,24 @@ export default function Channel() {
       return;
     }
 
-    const {boardList} = responseBody as GetBoardListResponseDto;
-    setBoardList(boardList);
-  }
+    const {boardList, totalBoardsSize} = responseBody as GetBoardListResponseDto;
+    setBoardList(prevList => [...prevList, ...(boardList || [])]);
+    setTotalBoardsSize(totalBoardsSize);
+  };
 
-  //component : postBoard //
+  const loadMoreBoards = () => {
+    if (!streamerId || loading) return;
+    setLoading(true);
+    getBoardList(streamerId, currentCategory, currentPage).then(response => {
+      getBoardCategoryListResponse(response);
+      setLoading(false);
+      setCurrentPage(prevPage => prevPage + 1);
+    });
+  };
+
+  const onManageButtonClickHandler =() =>{
+    setManageView(!manageView);
+  }
   const PostBoard = () => {
     const titleRef = useRef<HTMLTextAreaElement | null>(null);
     const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -275,7 +255,7 @@ export default function Channel() {
       };
 
       postBoardRequest(requestBody, accessToken).then(postBoardResponse);
-    }
+    };
 
     const onImageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files.length) {
@@ -299,10 +279,8 @@ export default function Channel() {
       setImageUrls(newImageUrls);
       setBoardImageFileList(newBoardImageFileList);
     };
-    // 카테고리 선택 핸들러
-    const onCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setCategory(event.target.value);
-    };
+
+
 
     return (
         <div id="board-write-wrapper">
@@ -318,7 +296,7 @@ export default function Channel() {
                 </div>
               </div>
               <div className='board-write-category-box'>
-                <select onChange={onCategoryChange} value={category}
+                <select onChange={(e) => setCategory(e.target.value)} value={category}
                         className='board-write-category-option'>
                   <option value="">카테고리를 선택해주세요.</option>
                   {boardCategories.map((item) => (
@@ -375,7 +353,6 @@ export default function Channel() {
     );
   };
 
-
   useEffect(() => {
     if (!streamerId) return;
     getUserRequest(streamerId).then(getUserResponse);
@@ -386,8 +363,8 @@ export default function Channel() {
 
   useEffect(() => {
     if (!streamerId) return;
-    getBoardList(streamerId, currentCategory).then(getBoardCategoryListResponse);
-  }, [currentCategory])
+    loadMoreBoards();
+  }, [currentCategory, streamerId]);
 
   return (
       <div id='station-wrapper'>
@@ -398,67 +375,79 @@ export default function Channel() {
                    style={{backgroundImage: `url(${station.image ? station.image : defaultStationImage})`}}
               />
             </div>
-
             <div className='station-main-wrapper'>
               <div className='station-content-box'>
-                <div className='station-nav-group'>
-                  {boardCategories.map((item) => (
-                      <div
-                          key={item.category}
-                          className={`station-nav-list ${currentCategory === item.category ? 'active' : ''}`}
-                          onClick={() => onCategoryClickHandler(item.category)}
-                      >
-                        {item.category}
-                      </div>
-                  ))}
-                </div>
-                <div className='divider'></div>
-                <div className='station-main-content-option'>
-                  <div className='station-main-content-count'>
-                    총 <span className="highlight">{`${boardList.length}개`}</span>의 글
+                <div className='station-content'>
+                  <div className='station-nav-category-bar'>
+                    <Tabs
+                        activeKey={currentCategory}
+                        onChange={onCategoryClickHandler}
+                        tabBarExtraContent={
+                          <Button onClick={onManageButtonClickHandler}>
+                            방송국 관리
+                          </Button>
+                        }
+                    >
+                      {boardCategories.map(item => (
+                          <TabPane tab={item.category} key={item.category}>
+                            <div className='station-main-content-option'>
+                              <div className='station-main-content-count'>
+                                총 <span className="highlight">{`${boardList.length}개`}</span>의 글
+                              </div>
+                              {loginUser?.userId === streamerId &&
+                                  <div className='station-main-post-button'
+                                       onClick={onPostButtonClickHandler}>
+                                    글쓰기
+                                  </div>
+                              }
+                            </div>
+                            <div className='station-main-content'>
+                              {boardList && boardList.map(board => (
+                                  <BoardItem
+                                      key={board.boardId}
+                                      boardListItem={board}
+                                      user={user}
+                                      onClick={() => onBoardDetailClickHandler(board.boardId)}
+                                  />
+                              ))}
+                            </div>
+                            {boardList.length < totalBoardsSize && (
+                                <div className="load-more-container">
+                                  <Button onClick={loadMoreBoards} disabled={loading}
+                                          type='primary'>
+                                    {loading ? '로딩 중...' : '더보기'}
+                                  </Button>
+                                </div>
+                            )}
+                          </TabPane>
+                      ))}
+                    </Tabs>
                   </div>
-                  {loginUser?.userId === streamerId &&
-                      <div className='station-main-post-button'
-                           onClick={onPostButtonClickHandler}>{'글쓰기'}</div>
-                  }
                 </div>
 
-                <div className='station-main-content'>
-                  {boardList && boardList.map(board =>
-                      <BoardItem key={board.boardId} boardListItem={board} user={user}
-                                 onClick={() =>{
-                                   onBoardDetailClickHandler(board.boardId)}}
-                      />
-                  )}
-                </div>
+                {postView &&
+                    <div className="modal-backdrop">
+                      <div className="modal-container">
+                        <div className="modal-body">
+                          <PostBoard/>
+                        </div>
+                      </div>
+                    </div>}
+                {detailView &&
+                    <div className="modal-backdrop">
+                      <div className="modal-container">
+                        <div className="modal-body">
+                          <BoardDetail boardId={selectedBoardId} onClose={closeBoardDetailHandler}/>
+                        </div>
+                      </div>
+                    </div>}
+
               </div>
-
-              {postView &&
-                  <div className="modal-backdrop">
-                    <div className="modal-container">
-                      <div className="modal-body">
-                        <PostBoard/>
-                      </div>
-                    </div>
-                  </div>}
-
-              {detailView &&
-                  <div className="modal-backdrop">
-                    <div className="modal-container">
-                      <div className="modal-body">
-                        <BoardDetail boardId={selectedBoardId} onClose={closeBoardDetailHandler}/>
-                      </div>
-                    </div>
-                  </div>
-              }
-
               <div className='station-user-info-box'>
                 <UserBox user={user} station={station} fans={fans}/>
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
   );

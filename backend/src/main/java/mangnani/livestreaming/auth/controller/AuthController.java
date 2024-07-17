@@ -2,6 +2,7 @@ package mangnani.livestreaming.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
@@ -10,8 +11,7 @@ import mangnani.livestreaming.auth.dto.response.LoginResponse;
 import mangnani.livestreaming.auth.dto.response.LogoutResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.service.AuthService;
-import mangnani.livestreaming.global.jwt.extractor.TokenExtractor;
-import mangnani.livestreaming.global.jwt.filter.JwtAuthenticationFilter;
+import mangnani.livestreaming.auth.jwt.extractor.TokenExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -40,12 +40,14 @@ public class AuthController {
 		return authService.login(loginRequest);
 	}
 
+
 	@GetMapping("/logout")
-	public ResponseEntity<LogoutResponse> logout(@AuthenticationPrincipal User user, HttpServletRequest request) {
+	public ResponseEntity<LogoutResponse> logout(@AuthenticationPrincipal @NotNull User user, HttpServletRequest request) {
 		String accessToken = tokenExtractor.resolveAccessToken(request);
 		return authService.logout(user.getUsername(),accessToken);
 	}
 
+	//TODO
 	@PostMapping("/reissue")
 	public ResponseEntity<String> reissue(HttpServletRequest request) {
 		String accessToken = tokenExtractor.resolveAccessToken(request);

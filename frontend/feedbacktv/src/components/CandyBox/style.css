@@ -1,0 +1,80 @@
+/* styles.css */
+
+.candy-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  width: calc(25% - 20px); /* Adjusts the width for 4 cards per row */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.candy-image-box {
+  width: 50%; /* More reasonable size for the image container */
+  height: 150px; /* Adjust height to accommodate image */
+  margin-bottom: 10px;
+  overflow: hidden; /* Ensures no overflow of the background image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.candy-image {
+  background-image: url(assets/image/lollipop.png);
+
+  background-position: 100% 100%;
+  background-size: 100% 100%;
+
+  width: 100%;
+  height: 100%;
+}
+
+.candy-info {
+  width: 100%; /* Ensures the info section uses up the full width of the card */
+}
+
+.candy-top {
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: center;
+  gap: 10px;
+}
+
+.candy-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.candy-amount {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.candy-price-color {
+  color : #E53D00;
+  font-size: 18px;
+}
+
+.buy-button {
+  padding: 10px 20px;
+  background-color: #000;
+  color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  width: 80%;
+
+  margin-top: 10px;
+}
+
+.buy-button:hover {
+  background-color: #019cfe; /* Darker on hover for better user experience */
+}
+
+

@@ -1,0 +1,56 @@
+/* styles.css */
+body {
+  font-family: Arial, sans-serif; /* Sets the font for the body */
+  margin: 0;
+  padding: 0;
+  background: #f0f0f0;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.product-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  width: calc(25% - 20px); /* Adjusts the width for 4 cards per row */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 20px;
+}
+
+.product-card img {
+  width: 50%; /* Adjust based on actual image size and preferences */
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.product-info h3 {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.product-info p {
+  color: #666;
+  font-size: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #333;
+}

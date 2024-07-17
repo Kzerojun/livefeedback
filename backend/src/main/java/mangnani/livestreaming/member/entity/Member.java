@@ -40,6 +40,8 @@ public class Member {
 
 	private String profileImage;
 
+	private String streamKey;
+
 	@CreatedDate
 	private LocalDateTime createdAt;
 
@@ -60,15 +62,25 @@ public class Member {
 	private Station station;
 
 	@Builder
-	public Member(String loginId, String password, String nickname) {
+	public Member(String loginId, String password, String nickname,String streamKey,Status status,Role role) {
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
-		this.status = Status.ACTIVATE;
-		this.role = Role.USER;
-		this.starCandyAmount = 0;
-		this.verification = false;
-		this.station = new Station();
+		this.streamKey = streamKey;
+		this.status = status;
+		this.role = role;
+		this.station = Station.create();
 	}
 
+	public void changePassword(String encodedNewPassword) {
+		this.password = encodedNewPassword;
+	}
+
+	public void changeProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
 }

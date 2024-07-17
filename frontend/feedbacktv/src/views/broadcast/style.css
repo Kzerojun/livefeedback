@@ -1,0 +1,122 @@
+.broadcast-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  width: 100%; /* 가로 폭을 100%로 설정 */
+
+  margin-top: 100px;
+
+  gap: 20px;
+}
+
+.broadcast-logo-box {
+  font-size : 80px;
+  font-family: 'Lobster', serif;
+}
+
+.broadcast-logo-part {
+  color: #E53D00;
+}
+
+.broadcast-card {
+  display: flex;
+  flex-direction: column;
+  width: 600px; /* 고정된 카드 너비 */
+  padding: 30px;
+  border: 1px solid #999999;
+  border-radius: 8px; /* 카드 모서리 둥글게 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 카드 그림자 */
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.input-group select {
+  padding: 10px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.start-broadcast-button-box {
+  align-items: center;  /* 세로 중앙 정렬 */
+  justify-content: center;  /* 가로 중앙 정렬 */
+  display: flex;
+}
+
+.start-broadcast-button {
+  border-radius: 46px;
+  width: 30%;
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #ff4081;
+
+  color: rgba(255, 255, 255, 1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+
+.start-broadcast-button:hover {
+  background-color: #ff4050;
+}
+
+.broadcast-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+.broadcast-url-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.broadcast-url-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.broadcast-url-detail {
+  padding: 10px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.broadcast-streamkey-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.broadcast-streamkey-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.broadcast-streamkey-detail {
+  padding: 10px;
+  border: 1px solid #999999;
+  border-radius: 4px;
+
+  font-size: 16px;
+  font-weight: bold;
+}

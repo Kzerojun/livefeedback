@@ -6,6 +6,26 @@
   background-size: 100% 100%;
 }
 
+.mystation-button{
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 6px;
+  width: 100px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #F76C40;
+
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+
+  cursor: pointer;
+}
+
 .logout-button {
   border: 1px solid rgba(0,0,0,0.3);
   border-radius: 6px;
@@ -36,7 +56,7 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #f2507e;
+  background-color: #F76C40;;
 
   color: white;
   font-size: 14px;
@@ -109,16 +129,110 @@
   cursor: pointer;
 }
 
+.pink-large-full-button:hover {
+  background-color: #ff4090;
+}
+
 .divider {
   flex-grow: 1;
   border: none;
   height: 1px;
   background-color: #ddd;
-  margin: 0 10px;
+}
+
+.station-main-content-option {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
 }
 
 .search-light-icon {
   background-image: url(assets/image/search-light.png);
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+}
+
+.icon {
+  width: 100%;
+  height: 100%;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
+
+.icon-button {
+  border-radius: 50% 50%;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.image-box-light-icon {
+  background-image: url(assets/image/image-box.png);
+}
+
+.close-icon {
+  background-image: url(assets/image/close.png);
+}
+
+.close-simple-icon {
+  background-image: url(assets/image/close-simple.png);
+}
+
+.favorites-on {
+  background-image: url(assets/image/favorite-on.png);
+}
+
+.favorites-off {
+  background-image: url(assets/image/favorite-off.png);
+}
+
+.lollipop {
+  background-image: url(assets/image/lollipop-icon.png);
+}
+
+.on{
+  background-image: url(assets/image/alarm-on.png);
+}
+
+.off {
+  background-image: url(assets/image/alarm-off.png);
+}
+
+.card-icon {
+  background-image: url(assets/image/card-icon.png);
+}
+
+.mobile-icon {
+  background-image: url(assets/image/mobile-icon.png);
+}
+
+.naver-pay-icon {
+  background-image: url(assets/image/naver-pay-icon.png);
+}
+
+.kakao-pay-icon {
+  background-image: url(assets/image/kakao-pay-icon.png);
+}
+
+.eye-light-on-icon {
+  background-image: url(assets/image/eye-light-on.png);
+}
+
+.eye-light-off-icon {
+  background-image: url(assets/image/eye-light-off.png);
+}
+
+.broadcast-icon {
+  background-image: url(assets/image/broadcast-icon.png);
+}
+
+.thumbnail {
+  background-image: url(assets/image/broadcast-icon.png);
 }
