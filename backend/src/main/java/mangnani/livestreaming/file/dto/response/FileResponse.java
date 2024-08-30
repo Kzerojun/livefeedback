@@ -10,7 +10,6 @@ import mangnani.livestreaming.global.dto.ResponseMessage;
 public class FileResponse extends ResponseDto {
 	private final String url;
 
-
 	private FileResponse(String url) {
 		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		this.url = url;

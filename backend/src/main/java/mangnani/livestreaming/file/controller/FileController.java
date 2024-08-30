@@ -30,7 +30,6 @@ public class FileController {
 		if (!isValidFileType(file)) {
 			throw new InvalidFileTypeException();
 		}
-
 		return fileService.uploadBoardImage(file);
 	}
 

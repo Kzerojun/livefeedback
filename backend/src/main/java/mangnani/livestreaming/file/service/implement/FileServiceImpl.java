@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService {
 	private String THUMBNAIL_URL;
 
 	@Value("${spring.file.thumbnailPath}")
-	private String thumbnailPath;
+	private String THUMBNAIL_PATH;
 
 	@Override
 	public ResponseEntity<FileResponse> uploadBoardImage(MultipartFile file) {
@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public String getThumbnailUrl(String fileName) {
-		return getUrl(THUMBNAIL_URL, thumbnailPath);
+		return getUrl(THUMBNAIL_URL, fileName);
 	}
 
 
@@ -58,7 +58,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public Resource getThumbnail(String fileName) {
-		return getImage(thumbnailPath, THUMBNAIL_URL);
+		return getImage(THUMBNAIL_PATH, fileName);
 	}
 
 	private FileResponse uploadFile(MultipartFile file, String filePath, String fileUrl) {
@@ -82,9 +82,9 @@ public class FileServiceImpl implements FileService {
 	}
 
 
-	private Resource getImage(String filePath,String fileName) {
+	private Resource getImage(String filePath, String fileName) {
 		try {
-			return new UrlResource("file:" + filePath + fileName);
+			return new UrlResource("file:" + filePath + fileName + ".png");
 		} catch (Exception e) {
 			return null;
 		}
@@ -93,7 +93,6 @@ public class FileServiceImpl implements FileService {
 	private String getUrl(String fileUrl, String fileName) {
 		return fileUrl + fileName;
 	}
-
 }
 
 
