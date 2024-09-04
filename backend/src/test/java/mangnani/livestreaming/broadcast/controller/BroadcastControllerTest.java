@@ -165,7 +165,7 @@ class BroadcastControllerTest {
 			);
 			GetBroadcastListResponse response = GetBroadcastListResponse.success(broadcastInfos);
 
-			when(broadcastService.getBroadcastsByCategory(any(String.class)))
+			when(broadcastService.getBroadcastsByCategory(any(BroadcastCategory.class)))
 					.thenReturn(ResponseEntity.ok(response));
 
 			mockMvc.perform(get(BROADCAST_CATEGORY_URL)

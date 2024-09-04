@@ -20,5 +20,6 @@ public enum BroadcastCategory {
 	R,
 	HTML,
 	CSS,
-	SQL
+	SQL,
+	ALL
 }

@@ -1,5 +1,6 @@
 package mangnani.livestreaming.broadcast.service;
 
+import mangnani.livestreaming.broadcast.constant.BroadcastCategory;
 import mangnani.livestreaming.broadcast.dto.request.StartBroadcastRequest;
 import mangnani.livestreaming.broadcast.dto.response.GetBroadcastInfoResponse;
 import mangnani.livestreaming.broadcast.dto.response.GetBroadcastListResponse;
@@ -13,6 +14,6 @@ public interface BroadcastService {
 
 	ResponseEntity<GetBroadcastInfoResponse> getBroadcastInfo(Long broadcastId);
 
-	ResponseEntity<GetBroadcastListResponse> getBroadcastsByCategory(String category);
+	ResponseEntity<GetBroadcastListResponse> getBroadcastsByCategory(BroadcastCategory category);
 
 }

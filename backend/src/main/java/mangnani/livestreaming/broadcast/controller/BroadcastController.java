@@ -2,6 +2,7 @@ package mangnani.livestreaming.broadcast.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import mangnani.livestreaming.broadcast.constant.BroadcastCategory;
 import mangnani.livestreaming.broadcast.dto.request.StartBroadcastRequest;
 import mangnani.livestreaming.broadcast.dto.response.GetBroadcastInfoResponse;
 import mangnani.livestreaming.broadcast.dto.response.GetBroadcastListResponse;
@@ -30,7 +31,7 @@ public class BroadcastController {
 
 	@GetMapping("/category")
 	public ResponseEntity<GetBroadcastListResponse> getBroadcasts(
-			@RequestParam("category") String category) {
+			@RequestParam("category") BroadcastCategory category) {
 		return broadcastService.getBroadcastsByCategory(category);
 	}
 

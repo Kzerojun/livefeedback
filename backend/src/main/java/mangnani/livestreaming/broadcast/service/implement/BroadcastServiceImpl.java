@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import mangnani.livestreaming.broadcast.constant.BroadcastCategory;
 import mangnani.livestreaming.broadcast.constant.BroadcastStatus;
 import mangnani.livestreaming.broadcast.dto.object.BroadcastInfo;
 import mangnani.livestreaming.broadcast.dto.request.StartBroadcastRequest;
@@ -57,7 +58,8 @@ public class BroadcastServiceImpl implements BroadcastService {
 	}
 
 
-	public ResponseEntity<GetBroadcastListResponse> getBroadcastsByCategory(String category) {
+	public ResponseEntity<GetBroadcastListResponse> getBroadcastsByCategory(
+			BroadcastCategory category) {
 		List<Broadcast> broadcasts = getBroadcasts(category);
 
 		List<BroadcastInfo> broadcastInfos = broadcasts.stream()
@@ -67,13 +69,14 @@ public class BroadcastServiceImpl implements BroadcastService {
 		return ResponseEntity.ok().body(GetBroadcastListResponse.success(broadcastInfos));
 	}
 
-	private List<Broadcast> getBroadcasts(String category) {
-		if (category.equals("ALL")) {
+	public List<Broadcast> getBroadcasts(BroadcastCategory category) {
+		if (category == BroadcastCategory.ALL) {
 			return broadcastRepository.findByStatus(BroadcastStatus.LIVE_ON);
 		} else {
 			return broadcastRepository.findByCategoryAndStatus(category, BroadcastStatus.LIVE_ON);
 		}
 	}
+
 
 	private BroadcastInfo convertToBroadcastInfo(Broadcast broadcast) {
 		String thumbnailUrl = fileService.getThumbnailUrl(broadcast.getStreamKey());
