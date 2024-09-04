@@ -1,16 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Hls from 'hls.js';
 import './style.css';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 import webSocketService from "../../apis/websocket";
-import { IMessage } from "@stomp/stompjs";
-import { getBroadcastInfo } from "../../apis/broadcast";
-import { StreamingBroadcastInfoResponseDto } from "../../types/response/broadcast";
+import {IMessage} from "@stomp/stompjs";
+import {getBroadcastInfo} from "../../apis/broadcast";
+import {StreamingBroadcastInfoResponseDto} from "../../types/response/broadcast";
 import ResponseDto from "../../types/response/response.dto";
-import { message } from 'antd';
-import { CaretRightOutlined, PauseOutlined, SoundOutlined } from '@ant-design/icons';
+import {message} from 'antd';
+import {CaretRightOutlined, PauseOutlined, SoundOutlined} from '@ant-design/icons';
 import useLoginUserStore from "../../stores/login-user.store";
 import {useCookies} from "react-cookie";
+import {ChatMessageRequest} from "../../types/request/stream";
 
 interface UserInfo {
   username: string;
@@ -24,7 +25,7 @@ interface ChatMessage {
 }
 
 export default function Stream() {
-  const { streamerId, broadcastId } = useParams<string>();
+  const {streamerId, broadcastId} = useParams<string>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [isLive, setIsLive] = useState<boolean>(true);
@@ -45,14 +46,13 @@ export default function Stream() {
     description: '방송 설명을 여기에 입력하세요.'
   };
 
-
   const getStreamingBroadcastResponse = (responseBody: StreamingBroadcastInfoResponseDto | ResponseDto | null) => {
     if (!responseBody) {
       setIsLive(false);
       return;
     }
 
-    const { code } = responseBody;
+    const {code} = responseBody;
 
     if (code !== 'SU') {
       message.error("에러 발생했습니다.");
@@ -71,7 +71,7 @@ export default function Stream() {
     const topic = `/topic/${streamerId}/${broadcastId}`;
 
     webSocketService.activate();
-    webSocketService.subscribe(topic, (message: IMessage) => {
+    webSocketService.subscribe(topic, message => {
       if (message.body) {
         const chatMessage: ChatMessage = JSON.parse(message.body);
         setMessages(prevMessages => [...prevMessages, chatMessage]);
@@ -103,7 +103,7 @@ export default function Stream() {
   }, [broadcastId]);
 
   useEffect(() => {
-    const hls = new Hls({ liveSyncDurationCount: 3 });
+    const hls = new Hls({liveSyncDurationCount: 3});
 
     if (videoRef.current) {
       videoRef.current.muted = true; // 비디오를 음소거로 시작
@@ -131,16 +131,23 @@ export default function Stream() {
   }, [streamKey]);
 
   const handleSendMessage = () => {
-    if(!loginUser) {
+    if (!loginUser) {
       message.error("로그인이 필요합니다.");
+      return;
     }
 
     if (newMessage.trim()) {
-      const sendPath = `/app/chat.sendMessage/${streamerId}/${broadcastId}`;
-      webSocketService.sendMessage(sendPath, {
-        loginId: loginUser?.userId,
+      const sendPath = `/app/chat/${streamerId}/${broadcastId}`;
+
+      const chatMessageRequest: ChatMessageRequest = {
+        userLoginId: loginUser.userId,
+        userNickname: loginUser.nickname,
         content: newMessage,
-      });
+        streamerId: streamerId!,
+        broadcastId: broadcastId!
+      };
+
+      webSocketService.sendMessage(sendPath, chatMessageRequest);
       setNewMessage('');
     }
   };
@@ -154,8 +161,6 @@ export default function Stream() {
       }
     };
   }, [location]);
-
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -194,13 +199,21 @@ export default function Stream() {
           <div className="video-container">
             {isLive ? (
                 <div className="video-wrapper">
-                  <video ref={videoRef} className="video-player" />
+                  <video ref={videoRef} className="video-player"/>
                   <div className="video-controls">
                     <button onClick={togglePlayPause} className="control-button">
-                      {isPlaying ? <PauseOutlined /> : <CaretRightOutlined />}
+                      {isPlaying ? <PauseOutlined/> : <CaretRightOutlined/>}
                     </button>
-                    <SoundOutlined style={{ fontSize: '24px', color: '#fff', margin: '0 10px' }} />
-                    <input type="range" min="0" max="1" step="0.05" value={volume} onChange={handleVolumeChange} className="control-slider" />
+                    <SoundOutlined style={{fontSize: '24px', color: '#fff', margin: '0 10px'}}/>
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={volume}
+                        onChange={handleVolumeChange}
+                        className="control-slider"
+                    />
                   </div>
                 </div>
             ) : (
@@ -212,7 +225,7 @@ export default function Stream() {
             )}
           </div>
           <div className="streamer-info">
-            <img src={userInfo.profileImage} alt="Profile" className="profile-image" />
+            <img src={userInfo.profileImage} alt="Profile" className="profile-image"/>
             <div className="streamer-details">
               <h2>{streamerNickname}</h2>
               <p>{broadcastTitle}</p>
@@ -236,8 +249,10 @@ export default function Stream() {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   placeholder={loginUser ? "Type your message here..." : "로그인이 필요합니다"}
+                  disabled={!loginUser} // 로그인하지 않은 경우 입력 필드를 비활성화
               />
-              <button onClick={handleSendMessage}>Send</button>
+              <button onClick={handleSendMessage} disabled={!loginUser}>Send</button>
+              {/* 로그인하지 않은 경우 버튼 비활성화 */}
             </div>
           </div>
         </div>

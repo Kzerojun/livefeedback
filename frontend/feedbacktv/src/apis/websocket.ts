@@ -18,7 +18,16 @@ class WebSocketService {
   }
 
   activate() {
-    this.client.activate();
+    if (!this.client.connected) {
+      this.client.activate();
+      setTimeout(() => {
+        if (!this.isConnected()) {
+          console.error('WebSocket connection failed.');
+        }
+      }, 3000); // 3초 후에 연결 상태를 확인
+    } else {
+      console.log('WebSocket is already active.');
+    }
   }
 
   deactivate() {
