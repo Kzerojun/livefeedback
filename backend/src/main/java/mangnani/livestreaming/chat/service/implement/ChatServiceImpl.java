@@ -18,23 +18,18 @@ import org.springframework.stereotype.Service;
 public class ChatServiceImpl implements ChatService {
 
 	private final ChatMessageRepository chatMessageRepository;
-	private final MemberRepository memberRepository;
 
 	@Override
 	public ChatMessageResponse saveChatMessage(ChatMessageRequest request) {
-
-		Member member = memberRepository.findByLoginId(request.getLoginId())
-				.orElseThrow(NoExistedMember::new);
-
 		ChatMessage chatMessage = ChatMessage.builder()
 				.broadcastId(request.getBroadcastId())
-				.loginId(request.getLoginId())
+				.loginId(request.getUserLoginId())
 				.content(request.getContent())
 				.streamerId(request.getStreamerId())
 				.build();
 
 		chatMessageRepository.save(chatMessage);
 
-		return ChatMessageResponse.create(member.getNickname(), chatMessage.getContent());
+		return ChatMessageResponse.create(request.getUserNickname(), chatMessage.getContent());
 	}
 }
