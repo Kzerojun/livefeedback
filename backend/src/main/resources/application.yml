@@ -35,7 +35,7 @@ spring:
     thumbnailPath : "/Users/gim-yeongjun/Desktop/2024-feedback/livefeedback/thumbnails/"
     profilePath : "/Users/gim-yeongjun/Desktop/2024-feedback/livefeedback/profileImages/"
 
-    boardImagesUrl : "http://localhost:8080/file/boardImages"
+    boardImagesUrl : "http://localhost:8080/file/boardImages/"
     thumbnailUrl : "http://localhost:8080/file/thumbnail/"
     profileUrl : "http://localhost:8080/file/profile/"
 
