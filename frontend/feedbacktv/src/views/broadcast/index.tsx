@@ -15,6 +15,7 @@ import {
   SERVER_URL, SERVER_URL_LABEL,
   STREAM_KEY_LABEL
 } from "../../constants/broadcast/broadcastConstants";
+import {message} from "antd";
 
 export default function BroadCast() {
   const [title, setTitle] = useState<string>('');
@@ -72,8 +73,7 @@ export default function BroadCast() {
 
     const request: StreamStatusRequestDto = { streamKey: loginUser.streamKey };
     try {
-      const streamStatusResponse = await checkStreamStatus(request);
-      handleStreamStatusResponse(streamStatusResponse);
+      await checkStreamStatus(request).then(handleStreamStatusResponse);
     } catch (error) {
       alert("스트림 상태를 확인하는 중 오류가 발생했습니다.");
     }
@@ -88,12 +88,12 @@ export default function BroadCast() {
     const { code, streamStatus } = responseBody as StreamStatusResponseDto;
 
     if (code !== 'SU' || streamStatus !== 'LIVE_ON') {
-      alert(streamStatus === 'LIVE_OFF' ? "현재 방송이 송출중이지 않습니다. OBS등을 확인해주세요" : "에러발생");
+      message.error(streamStatus === 'LIVE_OFF' ? "현재 방송이 송출중이지 않습니다. OBS등을 확인해주세요" : "에러발생");
       return;
     }
 
     if (!loginUser) {
-      alert("로그인을 부탁합니다.");
+      message.error("로그인을 부탁합니다.");
       return;
     }
 
@@ -103,6 +103,7 @@ export default function BroadCast() {
       title,
       category,
       attribute,
+      streamerNickname : loginUser.nickname
     };
 
     try {

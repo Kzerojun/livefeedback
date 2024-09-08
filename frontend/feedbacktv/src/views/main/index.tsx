@@ -26,8 +26,7 @@ export default function Main() {
   }, [selectedCategory]);
 
   const fetchBroadcasts = async (category: string) => {
-    const response = await getBroadcastsByCategory(category);
-    getBroadcastsInfoResponse(response);
+    await getBroadcastsByCategory(category).then(getBroadcastsInfoResponse);
   };
 
   const getBroadcastsInfoResponse = (response: BroadcastsInfoResponseDto | ResponseDto | null) => {

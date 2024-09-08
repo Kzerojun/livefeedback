@@ -187,8 +187,8 @@ export default function Channel() {
       return;
     }
 
-    const {boardList, totalBoardsSize} = responseBody as GetBoardListResponseDto;
-    setBoardList(prevList => [...prevList, ...(boardList || [])]);
+    const {boardItems, totalBoardsSize} = responseBody as GetBoardListResponseDto;
+    setBoardList(prevList => [...prevList, ...(boardItems || [])]);
     setTotalBoardsSize(totalBoardsSize);
   };
 
@@ -365,6 +365,10 @@ export default function Channel() {
     if (!streamerId) return;
     loadMoreBoards();
   }, [currentCategory, streamerId]);
+
+  useEffect(() => {
+    console.log(boardList);  // 여기서 boardList의 상태를 출력하여 확인
+  }, [boardList]);
 
   return (
       <div id='station-wrapper'>
