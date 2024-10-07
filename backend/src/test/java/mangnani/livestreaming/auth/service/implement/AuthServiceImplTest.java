@@ -1,167 +1,198 @@
 package mangnani.livestreaming.auth.service.implement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import java.util.Objects;
 import mangnani.livestreaming.auth.dto.request.LoginRequest;
 import mangnani.livestreaming.auth.dto.request.SignUpRequest;
 import mangnani.livestreaming.auth.dto.response.LoginResponse;
+import mangnani.livestreaming.auth.dto.response.LogoutResponse;
 import mangnani.livestreaming.auth.dto.response.SignUpResponse;
 import mangnani.livestreaming.auth.exception.DuplicatedLoginIdException;
 import mangnani.livestreaming.auth.exception.DuplicatedNicknameException;
-import mangnani.livestreaming.auth.exception.LoginFailedException;
-import mangnani.livestreaming.auth.jwt.provider.JwtTokenProvider;
+import mangnani.livestreaming.auth.jwt.service.TokenBlackListService;
+import mangnani.livestreaming.auth.service.AuthServiceImpl;
+import mangnani.livestreaming.auth.service.AuthServiceSupport;
+import mangnani.livestreaming.auth.service.RedisService;
+import mangnani.livestreaming.global.exception.NoPermissionTokenException;
+import mangnani.livestreaming.member.entity.Member;
+import mangnani.livestreaming.member.exception.NoExistedMember;
 import mangnani.livestreaming.member.repository.MemberRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceImplTest {
+@DisplayName("인증 서비스 구현체 테스트")
+class AuthServiceImplTest {
 
 	@Mock
 	private MemberRepository memberRepository;
-
 	@Mock
 	private PasswordEncoder passwordEncoder;
-
 	@Mock
-	private AuthenticationManagerBuilder authenticationManagerBuilder;
-
+	private AuthServiceSupport authServiceSupport;
 	@Mock
-	private JwtTokenProvider jwtTokenProvider;
-
+	private RedisService redisService;
 	@Mock
-	private RedisTemplate<String, Object> redisTemplate;
+	private TokenBlackListService tokenBlackListService;
 
 	@InjectMocks
 	private AuthServiceImpl authService;
 
+	@Nested
+	@DisplayName("회원가입 테스트")
+	class SignUpTest {
+		private SignUpRequest signUpRequest;
 
-	@DisplayName("회원가입 성공")
-	@Test
-	void signUp_Success() {
-		SignUpRequest signUpRequest = signUpRequest();
+		@BeforeEach
+		void setUp() {
+			signUpRequest = new SignUpRequest("testUser", "password", "nickname");
+		}
 
-		when(memberRepository.existsByLoginId(anyString())).thenReturn(false);
-		when(memberRepository.existsByNickname(anyString())).thenReturn(false);
-		when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+		@Test
+		@DisplayName("정상적인 회원가입 요청 처리")
+		void testSignUpSuccess() {
+			when(memberRepository.existsByLoginId(anyString())).thenReturn(false);
+			when(memberRepository.existsByNickname(anyString())).thenReturn(false);
+			when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-		ResponseEntity<SignUpResponse> response = authService.signUp(signUpRequest);
+			ResponseEntity<SignUpResponse> response = authService.signUp(signUpRequest);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-		assertThat(response.getBody().getCode()).isEqualTo("SU");
-		assertThat(response.getBody().getMessage()).isEqualTo("성공");
-		verify(memberRepository, times(1)).save(any());
+			assertEquals(HttpStatus.CREATED, response.getStatusCode());
+			assertEquals("SU", Objects.requireNonNull(response.getBody()).getCode());
+			verify(memberRepository).save(any(Member.class));
+		}
+
+		@Test
+		@DisplayName("중복된 로그인 ID로 회원가입 시도")
+		void testSignUpDuplicateLoginId() {
+			when(memberRepository.existsByLoginId(anyString())).thenReturn(true);
+
+			assertThrows(DuplicatedLoginIdException.class, () -> authService.signUp(signUpRequest));
+		}
+
+		@Test
+		@DisplayName("중복된 닉네임으로 회원가입 시도")
+		void testSignUpDuplicateNickname() {
+			when(memberRepository.existsByLoginId(anyString())).thenReturn(false);
+			when(memberRepository.existsByNickname(anyString())).thenReturn(true);
+
+			assertThrows(DuplicatedNicknameException.class, () -> authService.signUp(signUpRequest));
+		}
 	}
 
-	@DisplayName("중복된 이메일 회원가입 실패")
-	@Test
-	void signUp_Fail_Duplicated_Email() {
-		SignUpRequest signUpRequest = signUpRequest();
-		when(memberRepository.existsByLoginId(anyString())).thenReturn(true);
+	@Nested
+	@DisplayName("로그인 테스트")
+	class LoginTest {
+		private LoginRequest loginRequest;
+		private Authentication authentication;
 
-		assertThatThrownBy(() -> authService.signUp(signUpRequest)).isInstanceOf(
-				DuplicatedLoginIdException.class);
+		@BeforeEach
+		void setUp() {
+			loginRequest = new LoginRequest("testUser", "password");
+			authentication = mock(Authentication.class);
+		}
 
-		DuplicatedLoginIdException response = assertThrows(
-				DuplicatedLoginIdException.class, () -> authService.signUp(signUpRequest));
+		@Test
+		@DisplayName("정상적인 로그인 요청 처리")
+		void testLoginSuccess() {
+			when(memberRepository.existsByLoginId(anyString())).thenReturn(true);
+			when(authServiceSupport.authenticate(any(LoginRequest.class))).thenReturn(authentication);
 
-		assertThat(response.getCode()).isEqualTo("DLI");
-		assertThat(response.getMessage()).isEqualTo("중복된 아이디 입니다.");
+			// LoginResponse 객체를 빌더 패턴을 사용하여 생성
+			LoginResponse mockLoginResponse = LoginResponse.builder()
+					.grantType("Bearer")
+					.accessToken("accessToken")
+					.refreshToken("refreshToken")
+					.accessTokenExpirationTime(3600L)
+					.refreshTokenExpirationTime(86400L)
+					.build();
+
+			when(authServiceSupport.generateToken(any(Authentication.class))).thenReturn(mockLoginResponse);
+			when(authentication.getName()).thenReturn("testUser");
+
+			ResponseEntity<LoginResponse> response = authService.login(loginRequest);
+
+			assertEquals(HttpStatus.OK, response.getStatusCode());
+			assertNotNull(response.getBody());
+			assertEquals("Bearer", response.getBody().getGrantType());
+			assertEquals("accessToken", response.getBody().getAccessToken());
+			assertEquals("refreshToken", response.getBody().getRefreshToken());
+			assertEquals(3600L, response.getBody().getAccessTokenExpirationTime());
+			assertEquals(86400L, response.getBody().getRefreshTokenExpirationTime());
+			verify(redisService).saveRefreshToken(anyString(), anyString(), anyLong());
+		}
+
+		@Test
+		@DisplayName("존재하지 않는 사용자로 로그인 시도")
+		void testLoginNonExistentUser() {
+			when(memberRepository.existsByLoginId(anyString())).thenReturn(false);
+
+			assertThrows(NoExistedMember.class, () -> authService.login(loginRequest));
+		}
 	}
 
-	@DisplayName("중복된 닉네임 회원가입 실패")
-	@Test
-	void signUp_Fail_Duplicated_Nickname() {
-		SignUpRequest signUpRequest = signUpRequest();
-		when(memberRepository.existsByNickname(anyString())).thenReturn(true);
+	@Nested
+	@DisplayName("토큰 재발급 테스트")
+	class ReissueTest {
+		@Test
+		@DisplayName("정상적인 토큰 재발급 요청 처리")
+		void testReissueSuccess() {
+			String accessToken = "oldAccessToken";
+			String refreshToken = "validRefreshToken";
+			Authentication authentication = mock(Authentication.class);
 
-		assertThatThrownBy(() -> authService.signUp(signUpRequest)).isInstanceOf(
-				DuplicatedNicknameException.class);
+			when(authServiceSupport.validateToken(refreshToken)).thenReturn(true);
+			when(authServiceSupport.getAuthentication(accessToken)).thenReturn(authentication);
+			when(authentication.getName()).thenReturn("testUser");
+			when(redisService.getRefreshToken(anyString())).thenReturn(refreshToken);
+			when(authServiceSupport.generateAccessToken(authentication)).thenReturn("newAccessToken");
 
-		DuplicatedNicknameException response = assertThrows(
-				DuplicatedNicknameException.class, () -> authService.signUp(signUpRequest));
+			ResponseEntity<String> response = authService.reissue(accessToken, refreshToken);
 
-		assertThat(response.getCode()).isEqualTo("DN");
-		assertThat(response.getMessage()).isEqualTo("중복된 닉네임 입니다.");
+			assertEquals(HttpStatus.OK, response.getStatusCode());
+			assertEquals("newAccessToken", response.getBody());
+		}
+
+		@Test
+		@DisplayName("유효하지 않은 리프레시 토큰으로 재발급 시도")
+		void testReissueInvalidRefreshToken() {
+			when(authServiceSupport.validateToken(anyString())).thenReturn(false);
+
+			assertThrows(NoPermissionTokenException.class, () -> authService.reissue("accessToken", "invalidRefreshToken"));
+		}
 	}
 
+	@Nested
+	@DisplayName("로그아웃 테스트")
+	class LogoutTest {
+		@Test
+		@DisplayName("정상적인 로그아웃 요청 처리")
+		void testLogoutSuccess() {
+			String userLoginId = "testUser";
+			String accessToken = "validAccessToken";
 
-	@DisplayName("로그인 성공")
-	@Test
-	void login_SUCCESS() {
-		LoginRequest loginRequest = loginRequest();
-		Authentication authentication = mock(Authentication.class);
-		LoginResponse loginResponse = loginResponse();
+			when(redisService.getRefreshToken(anyString())).thenReturn("refreshToken");
+			when(authServiceSupport.getExpiration(accessToken)).thenReturn(3600L);
 
-		when(memberRepository.existsByLoginId(loginRequest.getLoginId())).thenReturn(true);
-		when(authenticationManagerBuilder.getObject()).thenReturn(mock(AuthenticationManager.class));
-		when(authenticationManagerBuilder.getObject().authenticate(any(
-				UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-		when(jwtTokenProvider.generateToken(authentication)).thenReturn(loginResponse);
-		when(redisTemplate.opsForValue()).thenReturn(mock(ValueOperations.class));
-		ResponseEntity<LoginResponse> response = authService.login(loginRequest);
+			ResponseEntity<LogoutResponse> response = authService.logout(userLoginId, accessToken);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getBody().getMessage()).isEqualTo("성공");
-		assertThat(response.getBody().getCode()).isEqualTo("SU");
-		assertThat(response.getBody().getAccessToken()).isEqualTo("accessToken");
-		assertThat(response.getBody().getRefreshToken()).isEqualTo("refreshToken");
-		assertThat(response.getBody().getGrantType()).isEqualTo("Bearer");
-		assertThat(response.getBody().getRefreshTokenExpirationTime()).isEqualTo(100L);
-	}
-
-	@DisplayName("회원존재 X 로그인 실패")
-	@Test
-	void login_Failed() {
-		when(memberRepository.existsByLoginId(loginRequest().getLoginId())).thenReturn(false);
-
-		assertThatThrownBy(() -> authService.login(loginRequest())).isInstanceOf(
-				LoginFailedException.class);
-	}
-
-	@DisplayName("로그아웃 성공")
-	@Test
-	void Logout_Success() {
-		//given
-
-
-	}
-
-	private SignUpRequest signUpRequest() {
-		return new SignUpRequest("test@example.com", "password", "testUser");
-	}
-
-	private LoginRequest loginRequest() {
-		return new LoginRequest("test@exmaple.com", "password");
-	}
-
-	private LoginResponse loginResponse() {
-		return LoginResponse.builder()
-				.accessToken("accessToken")
-				.refreshToken("refreshToken")
-				.grantType("Bearer")
-				.refreshTokenExpirationTime(100L)
-				.build();
+			assertEquals(HttpStatus.OK, response.getStatusCode());
+			assertThat(Objects.requireNonNull(response.getBody()).getMessage()).isEqualTo("성공");
+			verify(redisService).deleteRefreshToken(anyString());
+			verify(tokenBlackListService).blacklistToken(accessToken, 3600L);
+		}
 	}
 }
